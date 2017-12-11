@@ -7,3 +7,4 @@ Massa allows users to split a large file (or a torrent) and separately download 
 1. Download the project folder
 2. Open terminal and change directory to 'Massa'
 3. Run the command `npm start`
+4. To enable custom fonts, run the command: `npm install -g rnpm`
