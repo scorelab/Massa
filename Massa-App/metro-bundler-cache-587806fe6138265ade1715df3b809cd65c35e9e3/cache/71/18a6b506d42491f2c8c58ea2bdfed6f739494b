@@ -1,0 +1,254 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports._COMMON_AV_PLAYBACK_METHODS = exports._getUnloadedStatus = exports._getURIAndFullInitialStatusForLoadAsync = exports._throwErrorIfValuesOutOfBoundsInStatus = exports._getURIFromSource = exports._DEFAULT_INITIAL_PLAYBACK_STATUS = exports._DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS = undefined;
+
+var _this = this;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _Asset = require('../Asset');
+
+var _Asset2 = _interopRequireDefault(_Asset);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS = exports._DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS = 500;
+var _DEFAULT_INITIAL_PLAYBACK_STATUS = exports._DEFAULT_INITIAL_PLAYBACK_STATUS = {
+  positionMillis: 0,
+  progressUpdateIntervalMillis: _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
+  shouldPlay: false,
+  rate: 1.0,
+  shouldCorrectPitch: false,
+  volume: 1.0,
+  isMuted: false,
+  isLooping: false
+};
+
+var _getAssetFromPlaybackSource = function _getAssetFromPlaybackSource(source) {
+  if (source == null) {
+    return null;
+  }
+
+  var asset = null;
+  if (typeof source === 'number') {
+    asset = _Asset2.default.fromModule(source);
+  } else if ('constructor' in source && source.constructor.name === 'Asset') {
+    asset = source;
+  }
+  return asset;
+};
+
+var _getURIFromSource = exports._getURIFromSource = function _getURIFromSource(source) {
+  var uri = null;
+  var asset = _getAssetFromPlaybackSource(source);
+  if (asset != null) {
+    uri = asset.localUri || asset.uri;
+  } else if (source != null && typeof source !== 'number' && 'uri' in source && typeof source.uri === 'string') {
+    uri = source.uri;
+  }
+  return uri;
+};
+
+var _throwErrorIfValuesOutOfBoundsInStatus = exports._throwErrorIfValuesOutOfBoundsInStatus = function _throwErrorIfValuesOutOfBoundsInStatus(status) {
+  if (typeof status.rate === 'number' && (status.rate < 0.0 || status.rate > 32.0)) {
+    throw new Error('Rate value must be between 0.0 and 32.0.');
+  }
+  if (typeof status.volume === 'number' && (status.volume < 0.0 || status.volume > 1.0)) {
+    throw new Error('Volume value must be between 0.0 and 1.0.');
+  }
+};
+
+var _getURIAndFullInitialStatusForLoadAsync = exports._getURIAndFullInitialStatusForLoadAsync = function _getURIAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst) {
+  var asset, uri, fullInitialStatus;
+  return regeneratorRuntime.async(function _getURIAndFullInitialStatusForLoadAsync$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          asset = _getAssetFromPlaybackSource(source);
+
+          if (!(downloadFirst && asset != null)) {
+            _context.next = 4;
+            break;
+          }
+
+          _context.next = 4;
+          return regeneratorRuntime.awrap(asset.downloadAsync());
+
+        case 4:
+          uri = _getURIFromSource(source);
+
+          if (!(uri == null)) {
+            _context.next = 7;
+            break;
+          }
+
+          throw new Error('Cannot load null source!');
+
+        case 7:
+          fullInitialStatus = initialStatus == null ? _DEFAULT_INITIAL_PLAYBACK_STATUS : _extends({}, _DEFAULT_INITIAL_PLAYBACK_STATUS, initialStatus);
+
+          _throwErrorIfValuesOutOfBoundsInStatus(fullInitialStatus);
+
+          return _context.abrupt('return', { uri: uri, fullInitialStatus: fullInitialStatus });
+
+        case 10:
+        case 'end':
+          return _context.stop();
+      }
+    }
+  }, null, _this);
+};
+
+var _getUnloadedStatus = exports._getUnloadedStatus = function _getUnloadedStatus() {
+  var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+  var status = { isLoaded: false };
+  if (error) {
+    status.error = error;
+  }
+  return status;
+};
+
+var _COMMON_AV_PLAYBACK_METHODS = exports._COMMON_AV_PLAYBACK_METHODS = {
+  playAsync: function playAsync() {
+    return regeneratorRuntime.async(function playAsync$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            return _context2.abrupt('return', this.setStatusAsync({ shouldPlay: true }));
+
+          case 1:
+          case 'end':
+            return _context2.stop();
+        }
+      }
+    }, null, this);
+  },
+  playFromPositionAsync: function playFromPositionAsync(positionMillis) {
+    return regeneratorRuntime.async(function playFromPositionAsync$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            return _context3.abrupt('return', this.setStatusAsync({ positionMillis: positionMillis, shouldPlay: true }));
+
+          case 1:
+          case 'end':
+            return _context3.stop();
+        }
+      }
+    }, null, this);
+  },
+  pauseAsync: function pauseAsync() {
+    return regeneratorRuntime.async(function pauseAsync$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            return _context4.abrupt('return', this.setStatusAsync({ shouldPlay: false }));
+
+          case 1:
+          case 'end':
+            return _context4.stop();
+        }
+      }
+    }, null, this);
+  },
+  stopAsync: function stopAsync() {
+    return regeneratorRuntime.async(function stopAsync$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            return _context5.abrupt('return', this.setStatusAsync({ positionMillis: 0, shouldPlay: false }));
+
+          case 1:
+          case 'end':
+            return _context5.stop();
+        }
+      }
+    }, null, this);
+  },
+  setPositionAsync: function setPositionAsync(positionMillis) {
+    return regeneratorRuntime.async(function setPositionAsync$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            return _context6.abrupt('return', this.setStatusAsync({ positionMillis: positionMillis }));
+
+          case 1:
+          case 'end':
+            return _context6.stop();
+        }
+      }
+    }, null, this);
+  },
+  setRateAsync: function setRateAsync(rate, shouldCorrectPitch) {
+    return regeneratorRuntime.async(function setRateAsync$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            return _context7.abrupt('return', this.setStatusAsync({ rate: rate, shouldCorrectPitch: shouldCorrectPitch }));
+
+          case 1:
+          case 'end':
+            return _context7.stop();
+        }
+      }
+    }, null, this);
+  },
+  setVolumeAsync: function setVolumeAsync(volume) {
+    return regeneratorRuntime.async(function setVolumeAsync$(_context8) {
+      while (1) {
+        switch (_context8.prev = _context8.next) {
+          case 0:
+            return _context8.abrupt('return', this.setStatusAsync({ volume: volume }));
+
+          case 1:
+          case 'end':
+            return _context8.stop();
+        }
+      }
+    }, null, this);
+  },
+  setIsMutedAsync: function setIsMutedAsync(isMuted) {
+    return regeneratorRuntime.async(function setIsMutedAsync$(_context9) {
+      while (1) {
+        switch (_context9.prev = _context9.next) {
+          case 0:
+            return _context9.abrupt('return', this.setStatusAsync({ isMuted: isMuted }));
+
+          case 1:
+          case 'end':
+            return _context9.stop();
+        }
+      }
+    }, null, this);
+  },
+  setIsLoopingAsync: function setIsLoopingAsync(isLooping) {
+    return regeneratorRuntime.async(function setIsLoopingAsync$(_context10) {
+      while (1) {
+        switch (_context10.prev = _context10.next) {
+          case 0:
+            return _context10.abrupt('return', this.setStatusAsync({ isLooping: isLooping }));
+
+          case 1:
+          case 'end':
+            return _context10.stop();
+        }
+      }
+    }, null, this);
+  },
+  setProgressUpdateIntervalAsync: function setProgressUpdateIntervalAsync(progressUpdateIntervalMillis) {
+    return regeneratorRuntime.async(function setProgressUpdateIntervalAsync$(_context11) {
+      while (1) {
+        switch (_context11.prev = _context11.next) {
+          case 0:
+            return _context11.abrupt('return', this.setStatusAsync({ progressUpdateIntervalMillis: progressUpdateIntervalMillis }));
+
+          case 1:
+          case 'end':
+            return _context11.stop();
+        }
+      }
+    }, null, this);
+  }
+};

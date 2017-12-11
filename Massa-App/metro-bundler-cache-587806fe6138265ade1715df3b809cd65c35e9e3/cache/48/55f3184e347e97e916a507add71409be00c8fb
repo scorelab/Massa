@@ -1,0 +1,224 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.__waitForEmptyLogQueueAsync = __waitForEmptyLogQueueAsync;
+
+var _fbemitter = require('fbemitter');
+
+var _invariant = require('invariant');
+
+var _invariant2 = _interopRequireDefault(_invariant);
+
+var _uuidJs = require('uuid-js');
+
+var _uuidJs2 = _interopRequireDefault(_uuidJs);
+
+var _LogSerialization = require('./LogSerialization');
+
+var _LogSerialization2 = _interopRequireDefault(_LogSerialization);
+
+var _Constants = require('../Constants');
+
+var _Constants2 = _interopRequireDefault(_Constants);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _sessionId = _uuidJs2.default.create().toString();
+var _logQueue = [];
+var _transportEventEmitter = new _fbemitter.EventEmitter();
+
+var _logCounter = 0;
+var _isSendingLogs = false;
+var _completionPromise = void 0;
+var _resolveCompletion2 = void 0;
+
+function enqueueRemoteLogAsync(level, additionalFields, data) {
+  var warning, lines, _ref, body, includesStack;
+
+  return regeneratorRuntime.async(function enqueueRemoteLogAsync$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          if (_isReactNativeWarning(data)) {
+            (0, _invariant2.default)(data.length > 0, 'Warnings must include log arguments');
+            (0, _invariant2.default)(typeof data[0] === 'string', 'The log argument for a warning must be a string');
+
+            warning = data[0];
+            lines = warning.split('\n');
+
+            if (lines.length > 1 && /^\s+in /.test(lines[1])) {
+              data[0] = lines[0];
+            }
+          }
+
+          _context.next = 3;
+          return regeneratorRuntime.awrap(_LogSerialization2.default.serializeLogDataAsync(data, level));
+
+        case 3:
+          _ref = _context.sent;
+          body = _ref.body;
+          includesStack = _ref.includesStack;
+
+
+          _logQueue.push(_extends({
+            count: _logCounter++,
+            level: level,
+            body: body,
+            includesStack: includesStack
+          }, additionalFields));
+
+          _sendRemoteLogsAsync().catch(function (error) {
+            setImmediate(function () {
+              throw error;
+            });
+          });
+
+        case 8:
+        case 'end':
+          return _context.stop();
+      }
+    }
+  }, null, this);
+}
+
+function _sendRemoteLogsAsync() {
+  var batch, logUrl;
+  return regeneratorRuntime.async(function _sendRemoteLogsAsync$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          if (!(_isSendingLogs || !_logQueue.length)) {
+            _context2.next = 2;
+            break;
+          }
+
+          return _context2.abrupt('return');
+
+        case 2:
+          batch = _logQueue.splice(0);
+          logUrl = _Constants2.default.manifest.logUrl;
+
+          (0, _invariant2.default)(typeof logUrl === 'string', 'The Expo project manifest must specify `logUrl`');
+
+          _isSendingLogs = true;
+          _context2.prev = 6;
+          _context2.next = 9;
+          return regeneratorRuntime.awrap(_sendNextLogBatchAsync(batch, logUrl));
+
+        case 9:
+          _context2.prev = 9;
+
+          _isSendingLogs = false;
+          return _context2.finish(9);
+
+        case 12:
+          if (!_logQueue.length) {
+            _context2.next = 16;
+            break;
+          }
+
+          return _context2.abrupt('return', _sendRemoteLogsAsync());
+
+        case 16:
+          if (_resolveCompletion2) {
+            _resolveCompletion2();
+          }
+
+        case 17:
+        case 'end':
+          return _context2.stop();
+      }
+    }
+  }, null, this, [[6,, 9, 12]]);
+}
+
+function _sendNextLogBatchAsync(batch, logUrl) {
+  var response, success;
+  return regeneratorRuntime.async(function _sendNextLogBatchAsync$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          response = void 0;
+          _context3.prev = 1;
+          _context3.next = 4;
+          return regeneratorRuntime.awrap(fetch(logUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Connection: 'keep-alive',
+              'Proxy-Connection': 'keep-alive',
+              Accept: 'application/json',
+              'Device-Id': _Constants2.default.deviceId,
+              'Device-Name': _Constants2.default.deviceName,
+              'Session-Id': _sessionId
+            },
+            body: JSON.stringify(batch)
+          }));
+
+        case 4:
+          response = _context3.sent;
+          _context3.next = 11;
+          break;
+
+        case 7:
+          _context3.prev = 7;
+          _context3.t0 = _context3['catch'](1);
+
+          _transportEventEmitter.emit('error', { error: _context3.t0 });
+          return _context3.abrupt('return');
+
+        case 11:
+          success = response.status >= 200 && response.status < 300;
+
+          if (!success) {
+            _transportEventEmitter.emit('error', {
+              error: new Error('An HTTP error occurred when sending remote logs'),
+              response: response
+            });
+          }
+
+        case 13:
+        case 'end':
+          return _context3.stop();
+      }
+    }
+  }, null, this, [[1, 7]]);
+}
+
+function addTransportErrorListener(listener) {
+  return _transportEventEmitter.addListener('error', listener);
+}
+
+function _isReactNativeWarning(data) {
+  return data.length === 1 && typeof data[0] === 'string' && data[0].startsWith('Warning: ');
+}
+
+exports.default = {
+  enqueueRemoteLogAsync: enqueueRemoteLogAsync,
+  addTransportErrorListener: addTransportErrorListener
+};
+function __waitForEmptyLogQueueAsync() {
+  if (_completionPromise) {
+    return _completionPromise;
+  }
+
+  if (!_isSendingLogs && !_logQueue.length) {
+    return Promise.resolve();
+  }
+
+  _completionPromise = new Promise(function (resolve) {
+    _resolveCompletion2 = function _resolveCompletion() {
+      (0, _invariant2.default)(!_isSendingLogs, 'Must not be sending logs at completion');
+      (0, _invariant2.default)(!_logQueue.length, 'Log queue must be empty at completion');
+
+      _completionPromise = null;
+      _resolveCompletion2 = null;
+
+      resolve();
+    };
+  });
+  return _completionPromise;
+}

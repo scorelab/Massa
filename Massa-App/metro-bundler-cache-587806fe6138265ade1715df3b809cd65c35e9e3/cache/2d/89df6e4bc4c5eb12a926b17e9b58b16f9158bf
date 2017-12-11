@@ -1,0 +1,56 @@
+
+'use strict';
+
+var NativeModules = require('NativeModules');
+var Promise = require('Promise');
+var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+
+var AccessibilityManager = NativeModules.AccessibilityManager;
+
+var VOICE_OVER_EVENT = 'voiceOverDidChange';
+var ANNOUNCEMENT_DID_FINISH_EVENT = 'announcementDidFinish';
+
+var _subscriptions = new Map();
+
+var AccessibilityInfo = {
+  fetch: function fetch() {
+    return new Promise(function (resolve, reject) {
+      AccessibilityManager.getCurrentVoiceOverState(resolve, reject);
+    });
+  },
+
+  addEventListener: function addEventListener(eventName, handler) {
+    var listener;
+
+    if (eventName === 'change') {
+      listener = RCTDeviceEventEmitter.addListener(VOICE_OVER_EVENT, handler);
+    } else if (eventName === 'announcementFinished') {
+      listener = RCTDeviceEventEmitter.addListener(ANNOUNCEMENT_DID_FINISH_EVENT, handler);
+    }
+
+    _subscriptions.set(handler, listener);
+    return {
+      remove: AccessibilityInfo.removeEventListener.bind(null, eventName, handler)
+    };
+  },
+
+  setAccessibilityFocus: function setAccessibilityFocus(reactTag) {
+    AccessibilityManager.setAccessibilityFocus(reactTag);
+  },
+
+  announceForAccessibility: function announceForAccessibility(announcement) {
+    AccessibilityManager.announceForAccessibility(announcement);
+  },
+
+  removeEventListener: function removeEventListener(eventName, handler) {
+    var listener = _subscriptions.get(handler);
+    if (!listener) {
+      return;
+    }
+    listener.remove();
+    _subscriptions.delete(handler);
+  }
+
+};
+
+module.exports = AccessibilityInfo;

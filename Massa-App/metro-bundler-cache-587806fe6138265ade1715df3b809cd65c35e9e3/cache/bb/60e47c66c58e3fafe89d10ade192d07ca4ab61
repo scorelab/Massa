@@ -1,0 +1,117 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+require('./timer/polyfillNextTick');
+
+var _lodash = require('lodash.map');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _lodash3 = require('lodash.zipobject');
+
+var _lodash4 = _interopRequireDefault(_lodash3);
+
+var _reactNative = require('react-native');
+
+var _custom = require('websql/custom');
+
+var _custom2 = _interopRequireDefault(_custom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ExponentSQLite = _reactNative.NativeModules.ExponentSQLite;
+
+
+function SQLiteResult(error, insertId, rowsAffected, rows) {
+  this.error = error;
+  this.insertId = insertId;
+  this.rowsAffected = rowsAffected;
+  this.rows = rows;
+}
+
+function massageError(err) {
+  return typeof err === 'string' ? new Error(err) : err;
+}
+
+function SQLiteDatabase(name) {
+  this._name = name;
+}
+
+function dearrayifyRow(res) {
+  var rawError = res[0];
+  if (rawError) {
+    return new SQLiteResult(massageError(res[0]));
+  }
+  var insertId = res[1];
+  if (insertId === null) {
+    insertId = undefined;
+  }
+  var rowsAffected = res[2];
+  var columns = res[3];
+  var rows = res[4];
+  var zippedRows = [];
+  for (var i = 0, len = rows.length; i < len; i++) {
+    zippedRows.push((0, _lodash4.default)(columns, rows[i]));
+  }
+
+  return new SQLiteResult(null, insertId, rowsAffected, zippedRows);
+}
+
+function arrayifyQuery(query) {
+  return [query.sql, escapeForAndroid(query.args || [])];
+}
+
+function escapeForAndroid(args) {
+  if (_reactNative.Platform.OS === 'android') {
+    return JSON.stringify(args);
+  } else {
+    return args;
+  }
+}
+
+SQLiteDatabase.prototype.exec = function exec(queries, readOnly, callback) {
+  function onSuccess(rawResults) {
+    var results = (0, _lodash2.default)(rawResults, dearrayifyRow);
+    callback(null, results);
+  }
+
+  function onError(err) {
+    callback(massageError(err));
+  }
+
+  ExponentSQLite.exec(this._name, (0, _lodash2.default)(queries, arrayifyQuery), readOnly).then(onSuccess, onError);
+};
+
+var openDB = (0, _custom2.default)(SQLiteDatabase);
+
+function openDatabase(name, version, description, size, callback) {
+  if (name && typeof name === 'object') {
+    console.warn('Passing in an object to Expo.SQLite.openDatabase is deprecated and will be removed in SDK 24. Pass in the fields as separate arguments instead.');
+
+    if (typeof version !== 'string') {
+      callback = version;
+    }
+    size = name.size;
+    description = name.description;
+    version = name.version;
+    name = name.name;
+  }
+  if (!size) {
+    size = 1;
+  }
+  if (!description) {
+    description = name;
+  }
+  if (!version) {
+    version = '1.0';
+  }
+  if (typeof name === 'undefined') {
+    throw new Error('please be sure to call: openDatabase("myname.db")');
+  }
+  return openDB(name, version, description, size, callback);
+}
+
+exports.default = {
+  openDatabase: openDatabase
+};

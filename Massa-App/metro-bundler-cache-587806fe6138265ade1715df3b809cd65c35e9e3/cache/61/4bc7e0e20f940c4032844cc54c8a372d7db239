@@ -1,0 +1,23 @@
+
+'use strict';
+
+var PropTypes = require('prop-types');
+
+var TVViewPropTypes = {
+  isTVSelectable: PropTypes.bool,
+
+  hasTVPreferredFocus: PropTypes.bool,
+
+  tvParallaxProperties: PropTypes.object,
+
+  tvParallaxShiftDistanceX: PropTypes.number,
+
+  tvParallaxShiftDistanceY: PropTypes.number,
+
+  tvParallaxTiltAngle: PropTypes.number,
+
+  tvParallaxMagnification: PropTypes.number
+
+};
+
+module.exports = TVViewPropTypes;

@@ -1,0 +1,215 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DownloadResumable = exports.cacheDirectory = exports.documentDirectory = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+exports.getInfoAsync = getInfoAsync;
+exports.readAsStringAsync = readAsStringAsync;
+exports.writeAsStringAsync = writeAsStringAsync;
+exports.deleteAsync = deleteAsync;
+exports.moveAsync = moveAsync;
+exports.copyAsync = copyAsync;
+exports.makeDirectoryAsync = makeDirectoryAsync;
+exports.readDirectoryAsync = readDirectoryAsync;
+exports.downloadAsync = downloadAsync;
+exports.createDownloadResumable = createDownloadResumable;
+
+var _reactNative = require('react-native');
+
+var _uuidJs = require('uuid-js');
+
+var _uuidJs2 = _interopRequireDefault(_uuidJs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var FS = _reactNative.NativeModules.ExponentFileSystem;
+
+
+var normalizeEndingSlash = function normalizeEndingSlash(p) {
+  return p.replace(/\/*$/, '') + '/';
+};
+
+FS.documentDirectory = normalizeEndingSlash(FS.documentDirectory);
+FS.cacheDirectory = normalizeEndingSlash(FS.cacheDirectory);
+
+var documentDirectory = exports.documentDirectory = FS.documentDirectory;
+var cacheDirectory = exports.cacheDirectory = FS.cacheDirectory;
+
+function getInfoAsync(fileUri) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  return FS.getInfoAsync(fileUri, options);
+}
+
+function readAsStringAsync(fileUri) {
+  return FS.readAsStringAsync(fileUri, {});
+}
+
+function writeAsStringAsync(fileUri, contents) {
+  return FS.writeAsStringAsync(fileUri, contents, {});
+}
+
+function deleteAsync(fileUri) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  return FS.deleteAsync(fileUri, options);
+}
+
+function moveAsync(options) {
+  return FS.moveAsync(options);
+}
+
+function copyAsync(options) {
+  return FS.copyAsync(options);
+}
+
+function makeDirectoryAsync(fileUri) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  return FS.makeDirectoryAsync(fileUri, options);
+}
+
+function readDirectoryAsync(fileUri) {
+  return FS.readDirectoryAsync(fileUri, {});
+}
+
+function downloadAsync(uri, fileUri) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  return FS.downloadAsync(uri, fileUri, options);
+}
+
+function createDownloadResumable(uri, fileUri, options, callback, resumeData) {
+  return new DownloadResumable(uri, fileUri, options, callback, resumeData);
+}
+
+var DownloadResumable = exports.DownloadResumable = function () {
+  function DownloadResumable(url, fileUri) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var callback = arguments[3];
+    var resumeData = arguments[4];
+
+    _classCallCheck(this, DownloadResumable);
+
+    this._uuid = _uuidJs2.default.create(4).toString();
+    this._url = url;
+    this._fileUri = fileUri;
+    this._options = options;
+    this._resumeData = resumeData;
+    this._callback = callback;
+    this._subscription = null;
+    this._emitter = new _reactNative.NativeEventEmitter(FS);
+  }
+
+  _createClass(DownloadResumable, [{
+    key: 'downloadAsync',
+    value: function downloadAsync() {
+      return regeneratorRuntime.async(function downloadAsync$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              this._addSubscription();
+              _context.next = 3;
+              return regeneratorRuntime.awrap(FS.downloadResumableStartAsync(this._url, this._fileUri, this._uuid, this._options, this._resumeData));
+
+            case 3:
+              return _context.abrupt('return', _context.sent);
+
+            case 4:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, null, this);
+    }
+  }, {
+    key: 'pauseAsync',
+    value: function pauseAsync() {
+      var pauseResult;
+      return regeneratorRuntime.async(function pauseAsync$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              _context2.next = 2;
+              return regeneratorRuntime.awrap(FS.downloadResumablePauseAsync(this._uuid));
+
+            case 2:
+              pauseResult = _context2.sent;
+
+              if (!pauseResult) {
+                _context2.next = 8;
+                break;
+              }
+
+              this._resumeData = pauseResult.resumeData;
+              return _context2.abrupt('return', this.savable());
+
+            case 8:
+              throw new Error('Unable to generate a savable pause state');
+
+            case 9:
+            case 'end':
+              return _context2.stop();
+          }
+        }
+      }, null, this);
+    }
+  }, {
+    key: 'resumeAsync',
+    value: function resumeAsync() {
+      return regeneratorRuntime.async(function resumeAsync$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              this._addSubscription();
+              _context3.next = 3;
+              return regeneratorRuntime.awrap(FS.downloadResumableStartAsync(this._url, this._fileUri, this._uuid, this._options, this._resumeData));
+
+            case 3:
+              return _context3.abrupt('return', _context3.sent);
+
+            case 4:
+            case 'end':
+              return _context3.stop();
+          }
+        }
+      }, null, this);
+    }
+  }, {
+    key: 'savable',
+    value: function savable() {
+      return {
+        url: this._url,
+        fileUri: this._fileUri,
+        options: this._options,
+        resumeData: this._resumeData
+      };
+    }
+  }, {
+    key: '_addSubscription',
+    value: function _addSubscription() {
+      var _this = this;
+
+      if (this._subscription) {
+        return;
+      }
+      this._subscription = this._emitter.addListener('Exponent.downloadProgress', function (_ref) {
+        var uuid = _ref.uuid,
+            data = _ref.data;
+
+        if (uuid === _this._uuid) {
+          var callback = _this._callback;
+          if (callback) {
+            callback(data);
+          }
+        }
+      });
+    }
+  }]);
+
+  return DownloadResumable;
+}();

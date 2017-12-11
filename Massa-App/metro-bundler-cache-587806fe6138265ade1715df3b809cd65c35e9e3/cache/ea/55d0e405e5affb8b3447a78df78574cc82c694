@@ -1,0 +1,12 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _reactNative = require('react-native');
+
+var ExponentErrorRecovery = _reactNative.NativeModules.ExponentErrorRecovery;
+exports.default = {
+  setRecoveryProps: function setRecoveryProps(props) {
+    return ExponentErrorRecovery.setRecoveryProps(props);
+  }
+};

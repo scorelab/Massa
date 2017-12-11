@@ -1,0 +1,99 @@
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.touchableProps = exports.responderProps = exports.pathProps = exports.clipProps = exports.fontProps = exports.strokeProps = exports.fillProps = exports.numberProp = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reactNative = require('react-native');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var numberProp = _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]);
+
+var touchableProps = {
+    disabled: _propTypes2.default.bool,
+    onPress: _propTypes2.default.func,
+    onPressIn: _propTypes2.default.func,
+    onPressOut: _propTypes2.default.func,
+    onLongPress: _propTypes2.default.func,
+    delayPressIn: _propTypes2.default.number,
+    delayPressOut: _propTypes2.default.number,
+    delayLongPress: _propTypes2.default.number
+};
+
+var responderProps = [].concat(_toConsumableArray(Object.keys(_reactNative.PanResponder.create({}).panHandlers)), ['pointerEvents']).reduce(function (props, name) {
+    props[name] = _propTypes2.default.func;
+    return props;
+}, {});
+
+var fillProps = {
+    fill: _propTypes2.default.string,
+    fillOpacity: numberProp,
+    fillRule: _propTypes2.default.oneOf(['evenodd', 'nonzero'])
+};
+
+var clipProps = {
+    clipRule: _propTypes2.default.oneOf(['evenodd', 'nonzero']),
+    clipPath: _propTypes2.default.string
+};
+
+var definationProps = {
+    name: _propTypes2.default.string
+};
+
+var strokeProps = {
+    stroke: _propTypes2.default.string,
+    strokeWidth: numberProp,
+    strokeOpacity: numberProp,
+    strokeDasharray: _propTypes2.default.oneOfType([_propTypes2.default.arrayOf(_propTypes2.default.number), _propTypes2.default.string]),
+    strokeDashoffset: numberProp,
+    strokeLinecap: _propTypes2.default.oneOf(['butt', 'square', 'round']),
+    strokeLinejoin: _propTypes2.default.oneOf(['miter', 'bevel', 'round']),
+    strokeMiterlimit: numberProp
+};
+
+var fontProps = {
+    fontFamily: _propTypes2.default.string,
+    fontSize: numberProp,
+    fontWeight: numberProp,
+    fontStyle: _propTypes2.default.string,
+    font: _propTypes2.default.object
+};
+
+var transformProps = {
+    scale: numberProp,
+    scaleX: numberProp,
+    scaleY: numberProp,
+    rotate: numberProp,
+    rotation: numberProp,
+    translate: numberProp,
+    translateX: numberProp,
+    translateY: numberProp,
+    x: numberProp,
+    y: numberProp,
+    origin: numberProp,
+    originX: numberProp,
+    originY: numberProp,
+    skew: numberProp,
+    skewX: numberProp,
+    skewY: numberProp,
+    transform: _propTypes2.default.object
+};
+
+var pathProps = _extends({}, fillProps, strokeProps, clipProps, transformProps, responderProps, touchableProps, definationProps);
+
+exports.numberProp = numberProp;
+exports.fillProps = fillProps;
+exports.strokeProps = strokeProps;
+exports.fontProps = fontProps;
+exports.clipProps = clipProps;
+exports.pathProps = pathProps;
+exports.responderProps = responderProps;
+exports.touchableProps = touchableProps;

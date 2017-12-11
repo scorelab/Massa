@@ -1,0 +1,21 @@
+var _Constants = require('../Constants');
+
+var _Constants2 = _interopRequireDefault(_Constants);
+
+var _Logs = require('../logs/Logs');
+
+var _Logs2 = _interopRequireDefault(_Logs);
+
+var _RemoteLogging = require('../logs/RemoteLogging');
+
+var _RemoteLogging2 = _interopRequireDefault(_RemoteLogging);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+if (_Constants2.default.manifest && _Constants2.default.manifest.logUrl) {
+  if (!navigator.userAgent) {
+    _Logs2.default.enableXDELogging();
+  } else {
+    _RemoteLogging2.default.enqueueRemoteLogAsync('info', {}, ['You are now debugging remotely; check your browser console for your application logs.']);
+  }
+}

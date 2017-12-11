@@ -1,0 +1,118 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _RemoteLogging = require('./RemoteLogging');
+
+var _RemoteLogging2 = _interopRequireDefault(_RemoteLogging);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function createRemoteConsole(originalConsole) {
+  var groupDepth = 0;
+
+  var enhancedConsole = Object.create(originalConsole);
+
+  _defineConsoleLogMethod('debug', 'info');
+
+  _defineConsoleLogMethod('log', 'info');
+
+  _defineConsoleLogMethod('info', 'info');
+
+  _defineConsoleLogMethod('warn', 'warn');
+
+  _defineConsoleLogMethod('error', 'error');
+
+  enhancedConsole.assert = function assert(condition) {
+    for (var _len = arguments.length, data = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      data[_key - 1] = arguments[_key];
+    }
+
+    if (originalConsole.assert) {
+      originalConsole.assert.apply(originalConsole, [condition].concat(data));
+    }
+
+    if (condition) {
+      return;
+    }
+
+    var assertionMessage = 'Assertion failed';
+    if (!data.length) {
+      data.push(assertionMessage);
+    } else {
+      if (typeof data[0] !== 'string') {
+        data.unshift(assertionMessage);
+      } else {
+        data[0] = assertionMessage + ': ' + data[0];
+      }
+    }
+
+    _enqueueRemoteLog('error', {}, data);
+  };
+
+  enhancedConsole.group = function group() {
+    for (var _len2 = arguments.length, data = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      data[_key2] = arguments[_key2];
+    }
+
+    if (originalConsole.group) {
+      originalConsole.group.apply(originalConsole, data);
+    }
+
+    _enqueueRemoteLog('info', {}, data);
+    groupDepth++;
+  };
+
+  enhancedConsole.groupCollapsed = function groupCollapsed() {
+    for (var _len3 = arguments.length, data = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+      data[_key3] = arguments[_key3];
+    }
+
+    if (originalConsole.groupCollapsed) {
+      originalConsole.groupCollapsed.apply(originalConsole, data);
+    }
+
+    _enqueueRemoteLog('info', { groupCollapsed: true }, data);
+    groupDepth++;
+  };
+
+  enhancedConsole.groupEnd = function groupEnd() {
+    if (originalConsole.groupEnd) {
+      originalConsole.groupEnd();
+    }
+
+    if (groupDepth > 0) {
+      groupDepth--;
+    }
+
+    _enqueueRemoteLog('info', { shouldHide: true }, []);
+  };
+
+  function _defineConsoleLogMethod(name, level) {
+    enhancedConsole[name] = function __expoConsoleLog() {
+      for (var _len4 = arguments.length, data = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        data[_key4] = arguments[_key4];
+      }
+
+      if (originalConsole[name]) {
+        originalConsole[name].apply(originalConsole, data);
+      }
+
+      _enqueueRemoteLog(level, {}, data);
+    };
+  }
+
+  function _enqueueRemoteLog(level, additionalFields, data) {
+    _RemoteLogging2.default.enqueueRemoteLogAsync(level, _extends({ groupDepth: groupDepth }, additionalFields), data).catch(function (error) {
+      originalConsole.error('There was a problem sending log messages to your development environment', error);
+    });
+  }
+
+  return enhancedConsole;
+}
+
+exports.default = {
+  createRemoteConsole: createRemoteConsole
+};

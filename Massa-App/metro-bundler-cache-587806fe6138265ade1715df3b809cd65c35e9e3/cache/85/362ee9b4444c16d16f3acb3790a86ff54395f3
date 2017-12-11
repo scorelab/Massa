@@ -1,0 +1,31 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _reactNative = require('react-native');
+
+var ExponentFacebook = _reactNative.NativeModules.ExponentFacebook;
+exports.default = {
+  logInWithReadPermissionsAsync: function logInWithReadPermissionsAsync(appId, options) {
+    return regeneratorRuntime.async(function logInWithReadPermissionsAsync$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            if (typeof appId !== 'string') {
+              console.warn('logInWithReadPermissionsAsync: parameter \'appId\' must be a string, was \'' + typeof appId + '\'\'.');
+              appId = String(appId);
+            }
+
+            if (!options || typeof options !== 'object') {
+              options = {};
+            }
+            return _context.abrupt('return', ExponentFacebook.logInWithReadPermissionsAsync(appId, options));
+
+          case 3:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, null, this);
+  }
+};

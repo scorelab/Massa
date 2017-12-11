@@ -1,0 +1,68 @@
+
+'use strict';
+
+var AssetRegistry = require('AssetRegistry');
+var AssetSourceResolver = require('AssetSourceResolver');
+var NativeModules = require('NativeModules');
+
+var _customSourceTransformer = void 0,
+    _serverURL = void 0,
+    _bundleSourceURL = void 0;
+
+function getDevServerURL() {
+  if (_serverURL === undefined) {
+    var scriptURL = NativeModules.SourceCode.scriptURL;
+    var match = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
+    if (match) {
+      _serverURL = match[0];
+    } else {
+      _serverURL = null;
+    }
+  }
+  return _serverURL;
+}
+
+function getBundleSourceURL() {
+  if (_bundleSourceURL === undefined) {
+    var scriptURL = NativeModules.SourceCode.scriptURL;
+    if (!scriptURL) {
+      _bundleSourceURL = null;
+      return _bundleSourceURL;
+    }
+    if (scriptURL.startsWith('assets://')) {
+      _bundleSourceURL = null;
+      return _bundleSourceURL;
+    }
+    _bundleSourceURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
+    if (!scriptURL.startsWith('file://')) {
+      _bundleSourceURL = 'file://' + _bundleSourceURL;
+    }
+  }
+
+  return _bundleSourceURL;
+}
+
+function setCustomSourceTransformer(transformer) {
+  _customSourceTransformer = transformer;
+}
+
+function resolveAssetSource(source) {
+  if (typeof source === 'object') {
+    return source;
+  }
+
+  var asset = AssetRegistry.getAssetByID(source);
+  if (!asset) {
+    return null;
+  }
+
+  var resolver = new AssetSourceResolver(getDevServerURL(), getBundleSourceURL(), asset);
+  if (_customSourceTransformer) {
+    return _customSourceTransformer(resolver);
+  }
+  return resolver.defaultAsset();
+}
+
+module.exports = resolveAssetSource;
+module.exports.pickScale = AssetSourceResolver.pickScale;
+module.exports.setCustomSourceTransformer = setCustomSourceTransformer;

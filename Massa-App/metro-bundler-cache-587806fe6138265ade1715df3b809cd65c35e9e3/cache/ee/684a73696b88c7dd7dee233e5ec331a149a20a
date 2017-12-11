@@ -1,0 +1,98 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WHEN_UNLOCKED_THIS_DEVICE_ONLY = exports.WHEN_UNLOCKED = exports.ALWAYS_THIS_DEVICE_ONLY = exports.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY = exports.ALWAYS = exports.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY = exports.AFTER_FIRST_UNLOCK = undefined;
+exports.deleteItemAsync = deleteItemAsync;
+exports.getItemAsync = getItemAsync;
+exports.setItemAsync = setItemAsync;
+
+var _reactNative = require('react-native');
+
+var ExponentSecureStore = _reactNative.NativeModules.ExponentSecureStore;
+var AFTER_FIRST_UNLOCK = exports.AFTER_FIRST_UNLOCK = ExponentSecureStore.AFTER_FIRST_UNLOCK;
+var AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY = exports.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY = ExponentSecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY;
+var ALWAYS = exports.ALWAYS = ExponentSecureStore.ALWAYS;
+var WHEN_PASSCODE_SET_THIS_DEVICE_ONLY = exports.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY = ExponentSecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY;
+var ALWAYS_THIS_DEVICE_ONLY = exports.ALWAYS_THIS_DEVICE_ONLY = ExponentSecureStore.ALWAYS_THIS_DEVICE_ONLY;
+var WHEN_UNLOCKED = exports.WHEN_UNLOCKED = ExponentSecureStore.WHEN_UNLOCKED;
+var WHEN_UNLOCKED_THIS_DEVICE_ONLY = exports.WHEN_UNLOCKED_THIS_DEVICE_ONLY = ExponentSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY;
+
+function deleteItemAsync(key) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return regeneratorRuntime.async(function deleteItemAsync$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          _ensureValidKey(key);
+          _context.next = 3;
+          return regeneratorRuntime.awrap(ExponentSecureStore.deleteValueWithKeyAsync(key, options));
+
+        case 3:
+        case 'end':
+          return _context.stop();
+      }
+    }
+  }, null, this);
+}
+
+function getItemAsync(key) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return regeneratorRuntime.async(function getItemAsync$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          _ensureValidKey(key);
+          _context2.next = 3;
+          return regeneratorRuntime.awrap(ExponentSecureStore.getValueWithKeyAsync(key, options));
+
+        case 3:
+          return _context2.abrupt('return', _context2.sent);
+
+        case 4:
+        case 'end':
+          return _context2.stop();
+      }
+    }
+  }, null, this);
+}
+
+function setItemAsync(key, value) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  return regeneratorRuntime.async(function setItemAsync$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          _ensureValidKey(key);
+
+          if (_isValidValue(value)) {
+            _context3.next = 3;
+            break;
+          }
+
+          throw new Error('Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.');
+
+        case 3:
+          _context3.next = 5;
+          return regeneratorRuntime.awrap(ExponentSecureStore.setValueWithKeyAsync(value, key, options));
+
+        case 5:
+        case 'end':
+          return _context3.stop();
+      }
+    }
+  }, null, this);
+}
+
+function _ensureValidKey(key) {
+  if (!_isValidKey(key)) {
+    throw new Error('Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".');
+  }
+}
+
+function _isValidKey(key) {
+  return typeof key === 'string' && /^[\w.-]+$/.test(key);
+}
+
+function _isValidValue(value) {
+  return typeof value === 'string';
+}

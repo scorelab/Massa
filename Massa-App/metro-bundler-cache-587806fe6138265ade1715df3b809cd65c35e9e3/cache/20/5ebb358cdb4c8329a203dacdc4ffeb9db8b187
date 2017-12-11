@@ -1,0 +1,12 @@
+
+'use strict';
+
+var ReactNative = void 0;
+
+if (__DEV__) {
+  ReactNative = require('ReactNativeFiber-dev');
+} else {
+  ReactNative = require('ReactNativeFiber-prod');
+}
+
+module.exports = ReactNative;

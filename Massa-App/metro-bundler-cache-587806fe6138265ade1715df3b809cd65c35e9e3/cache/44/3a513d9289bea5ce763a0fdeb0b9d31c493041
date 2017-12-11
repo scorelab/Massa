@@ -1,0 +1,1102 @@
+
+'use strict';
+
+var _react2 = require('react');
+
+var _react3 = _interopRequireDefault(_react2);
+
+var _index2 = require('./../../../react-transform-hmr/lib/index.js');
+
+var _index3 = _interopRequireDefault(_index2);
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _class,
+    _temp,
+    _initialiseProps,
+    _jsxFileName = '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/react-native/Libraries/Lists/VirtualizedList.js';
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _components = {
+  VirtualizedList: {
+    displayName: 'VirtualizedList'
+  },
+  CellRenderer: {
+    displayName: 'CellRenderer'
+  }
+};
+
+var _reactTransformHmrLibIndexJs2 = (0, _index3.default)({
+  filename: '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/react-native/Libraries/Lists/VirtualizedList.js',
+  components: _components,
+  locals: [module],
+  imports: [_react3.default]
+});
+
+function _wrapComponent(id) {
+  return function (Component) {
+    return _reactTransformHmrLibIndexJs2(Component, id);
+  };
+}
+
+var Batchinator = require('Batchinator');
+var FillRateHelper = require('FillRateHelper');
+var PropTypes = require('prop-types');
+var React = require('React');
+var ReactNative = require('ReactNative');
+var RefreshControl = require('RefreshControl');
+var ScrollView = require('ScrollView');
+var StyleSheet = require('StyleSheet');
+var View = require('View');
+var ViewabilityHelper = require('ViewabilityHelper');
+
+var flattenStyle = require('flattenStyle');
+var infoLog = require('infoLog');
+var invariant = require('fbjs/lib/invariant');
+
+var warning = require('fbjs/lib/warning');
+
+var _require = require('VirtualizeUtils'),
+    computeWindowedRenderLimits = _require.computeWindowedRenderLimits;
+
+var _usedIndexForKey = false;
+
+var VirtualizedList = _wrapComponent('VirtualizedList')((_temp = _class = function (_React$PureComponent) {
+  _inherits(VirtualizedList, _React$PureComponent);
+
+  _createClass(VirtualizedList, [{
+    key: 'scrollToEnd',
+    value: function scrollToEnd(params) {
+      var animated = params ? params.animated : true;
+      var veryLast = this.props.getItemCount(this.props.data) - 1;
+      var frame = this._getFrameMetricsApprox(veryLast);
+      var offset = Math.max(0, frame.offset + frame.length + this._footerLength - this._scrollMetrics.visibleLength);
+
+      this._scrollRef.scrollTo(this.props.horizontal ? { x: offset, animated: animated } : { y: offset, animated: animated });
+    }
+  }, {
+    key: 'scrollToIndex',
+    value: function scrollToIndex(params) {
+      var _props = this.props,
+          data = _props.data,
+          horizontal = _props.horizontal,
+          getItemCount = _props.getItemCount,
+          getItemLayout = _props.getItemLayout,
+          onScrollToIndexFailed = _props.onScrollToIndexFailed;
+      var animated = params.animated,
+          index = params.index,
+          viewOffset = params.viewOffset,
+          viewPosition = params.viewPosition;
+
+      invariant(index >= 0 && index < getItemCount(data), 'scrollToIndex out of range: ' + index + ' vs ' + (getItemCount(data) - 1));
+      if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
+        invariant(!!onScrollToIndexFailed, 'scrollToIndex should be used in conjunction with getItemLayout or onScrollToIndexFailed, ' + 'otherwise there is no way to know the location of offscreen indices or handle failures.');
+        onScrollToIndexFailed({
+          averageItemLength: this._averageCellLength,
+          highestMeasuredFrameIndex: this._highestMeasuredFrameIndex,
+          index: index
+        });
+        return;
+      }
+      var frame = this._getFrameMetricsApprox(index);
+      var offset = Math.max(0, frame.offset - (viewPosition || 0) * (this._scrollMetrics.visibleLength - frame.length)) - (viewOffset || 0);
+
+      this._scrollRef.scrollTo(horizontal ? { x: offset, animated: animated } : { y: offset, animated: animated });
+    }
+  }, {
+    key: 'scrollToItem',
+    value: function scrollToItem(params) {
+      var item = params.item;
+      var _props2 = this.props,
+          data = _props2.data,
+          getItem = _props2.getItem,
+          getItemCount = _props2.getItemCount;
+
+      var itemCount = getItemCount(data);
+      for (var _index = 0; _index < itemCount; _index++) {
+        if (getItem(data, _index) === item) {
+          this.scrollToIndex(_extends({}, params, { index: _index }));
+          break;
+        }
+      }
+    }
+  }, {
+    key: 'scrollToOffset',
+    value: function scrollToOffset(params) {
+      var animated = params.animated,
+          offset = params.offset;
+
+      this._scrollRef.scrollTo(this.props.horizontal ? { x: offset, animated: animated } : { y: offset, animated: animated });
+    }
+  }, {
+    key: 'recordInteraction',
+    value: function recordInteraction() {
+      this._viewabilityTuples.forEach(function (t) {
+        t.viewabilityHelper.recordInteraction();
+      });
+      this._updateViewableItems(this.props.data);
+    }
+  }, {
+    key: 'flashScrollIndicators',
+    value: function flashScrollIndicators() {
+      this._scrollRef.flashScrollIndicators();
+    }
+  }, {
+    key: 'getScrollResponder',
+    value: function getScrollResponder() {
+      if (this._scrollRef && this._scrollRef.getScrollResponder) {
+        return this._scrollRef.getScrollResponder();
+      }
+    }
+  }, {
+    key: 'getScrollableNode',
+    value: function getScrollableNode() {
+      if (this._scrollRef && this._scrollRef.getScrollableNode) {
+        return this._scrollRef.getScrollableNode();
+      } else {
+        return ReactNative.findNodeHandle(this._scrollRef);
+      }
+    }
+  }, {
+    key: 'setNativeProps',
+    value: function setNativeProps(props) {
+      if (this._scrollRef) {
+        this._scrollRef.setNativeProps(props);
+      }
+    }
+  }, {
+    key: 'getChildContext',
+    value: function getChildContext() {
+      return {
+        virtualizedList: {
+          horizontal: this.props.horizontal
+        }
+      };
+    }
+  }]);
+
+  function VirtualizedList(props, context) {
+    _classCallCheck(this, VirtualizedList);
+
+    var _this = _possibleConstructorReturn(this, (VirtualizedList.__proto__ || Object.getPrototypeOf(VirtualizedList)).call(this, props, context));
+
+    _initialiseProps.call(_this);
+
+    invariant(!props.onScroll || !props.onScroll.__isNative, 'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' + 'to support native onScroll events with useNativeDriver');
+    invariant(!(_this._isNestedWithSameOrientation() && props.onViewableItemsChanged), 'Nesting lists that scroll in the same direction does not support onViewableItemsChanged' + 'on the inner list.');
+
+    _this._fillRateHelper = new FillRateHelper(_this._getFrameMetrics);
+    _this._updateCellsToRenderBatcher = new Batchinator(_this._updateCellsToRender, _this.props.updateCellsBatchingPeriod);
+
+    if (_this.props.viewabilityConfigCallbackPairs) {
+      _this._viewabilityTuples = _this.props.viewabilityConfigCallbackPairs.map(function (pair) {
+        return {
+          viewabilityHelper: new ViewabilityHelper(pair.viewabilityConfig),
+          onViewableItemsChanged: pair.onViewableItemsChanged
+        };
+      });
+    } else if (_this.props.onViewableItemsChanged) {
+      _this._viewabilityTuples.push({
+        viewabilityHelper: new ViewabilityHelper(_this.props.viewabilityConfig),
+        onViewableItemsChanged: _this.props.onViewableItemsChanged
+      });
+    }
+
+    _this.state = {
+      first: _this.props.initialScrollIndex || 0,
+      last: Math.min(_this.props.getItemCount(_this.props.data), (_this.props.initialScrollIndex || 0) + _this.props.initialNumToRender) - 1
+    };
+    return _this;
+  }
+
+  _createClass(VirtualizedList, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      if (this.props.initialScrollIndex) {
+        this._initialScrollIndexTimeout = setTimeout(function () {
+          return _this2.scrollToIndex({
+            animated: false,
+            index: _this2.props.initialScrollIndex
+          });
+        }, 0);
+      }
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this._updateViewableItems(null);
+      this._updateCellsToRenderBatcher.dispose();
+      this._viewabilityTuples.forEach(function (tuple) {
+        tuple.viewabilityHelper.dispose();
+      });
+      this._fillRateHelper.deactivateAndFlush();
+      clearTimeout(this._initialScrollIndexTimeout);
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(newProps) {
+      var data = newProps.data,
+          extraData = newProps.extraData,
+          getItemCount = newProps.getItemCount,
+          maxToRenderPerBatch = newProps.maxToRenderPerBatch;
+
+      this.setState({
+        first: Math.max(0, Math.min(this.state.first, getItemCount(data) - 1 - maxToRenderPerBatch)),
+        last: Math.max(0, Math.min(this.state.last, getItemCount(data) - 1))
+      });
+      if (data !== this.props.data || extraData !== this.props.extraData) {
+        this._hasDataChangedSinceEndReached = true;
+      }
+    }
+  }, {
+    key: '_pushCells',
+    value: function _pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, first, last, inversionStyle) {
+      var _this3 = this;
+
+      var _props3 = this.props,
+          CellRendererComponent = _props3.CellRendererComponent,
+          ItemSeparatorComponent = _props3.ItemSeparatorComponent,
+          data = _props3.data,
+          getItem = _props3.getItem,
+          getItemCount = _props3.getItemCount,
+          horizontal = _props3.horizontal,
+          keyExtractor = _props3.keyExtractor;
+
+      var stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
+      var end = getItemCount(data) - 1;
+      var prevCellKey = void 0;
+      last = Math.min(end, last);
+
+      var _loop = function _loop(ii) {
+        var item = getItem(data, ii);
+        var key = keyExtractor(item, ii);
+        if (stickyIndicesFromProps.has(ii + stickyOffset)) {
+          stickyHeaderIndices.push(cells.length);
+        }
+        cells.push(React.createElement(CellRenderer, {
+          CellRendererComponent: CellRendererComponent,
+          ItemSeparatorComponent: ii < end ? ItemSeparatorComponent : undefined,
+          cellKey: key,
+          fillRateHelper: _this3._fillRateHelper,
+          horizontal: horizontal,
+          index: ii,
+          inversionStyle: inversionStyle,
+          item: item,
+          key: key,
+          prevCellKey: prevCellKey,
+          onUpdateSeparators: _this3._onUpdateSeparators,
+          onLayout: function onLayout(e) {
+            return _this3._onCellLayout(e, key, ii);
+          },
+          onUnmount: _this3._onCellUnmount,
+          parentProps: _this3.props,
+          ref: function ref(_ref) {
+            _this3._cellRefs[key] = _ref;
+          },
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 550
+          }
+        }));
+        prevCellKey = key;
+      };
+
+      for (var ii = first; ii <= last; ii++) {
+        _loop(ii);
+      }
+    }
+  }, {
+    key: '_isVirtualizationDisabled',
+    value: function _isVirtualizationDisabled() {
+      return this.props.disableVirtualization || this._isNestedWithSameOrientation();
+    }
+  }, {
+    key: '_isNestedWithSameOrientation',
+    value: function _isNestedWithSameOrientation() {
+      var nestedContext = this.context.virtualizedList;
+      return !!(nestedContext && !!nestedContext.horizontal === !!this.props.horizontal);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      if (__DEV__) {
+        var flatStyles = flattenStyle(this.props.contentContainerStyle);
+        warning(flatStyles == null || flatStyles.flexWrap !== 'wrap', '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' + 'Consider using `numColumns` with `FlatList` instead.');
+      }
+
+      var _props4 = this.props,
+          ListEmptyComponent = _props4.ListEmptyComponent,
+          ListFooterComponent = _props4.ListFooterComponent,
+          ListHeaderComponent = _props4.ListHeaderComponent;
+      var _props5 = this.props,
+          data = _props5.data,
+          horizontal = _props5.horizontal;
+
+      var isVirtualizationDisabled = this._isVirtualizationDisabled();
+      var inversionStyle = this.props.inverted ? this.props.horizontal ? styles.horizontallyInverted : styles.verticallyInverted : null;
+      var cells = [];
+      var stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
+      var stickyHeaderIndices = [];
+      if (ListHeaderComponent) {
+        if (stickyIndicesFromProps.has(0)) {
+          stickyHeaderIndices.push(0);
+        }
+        var element = React.isValidElement(ListHeaderComponent) ? ListHeaderComponent : React.createElement(ListHeaderComponent, {
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 627
+          }
+        });
+        cells.push(React.createElement(
+          View,
+          {
+            key: '$header',
+            onLayout: this._onLayoutHeader,
+            style: inversionStyle, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 630
+            }
+          },
+          element
+        ));
+      }
+      var itemCount = this.props.getItemCount(data);
+      if (itemCount > 0) {
+        _usedIndexForKey = false;
+        var spacerKey = !horizontal ? 'height' : 'width';
+        var lastInitialIndex = this.props.initialScrollIndex ? -1 : this.props.initialNumToRender - 1;
+        var _state = this.state,
+            _first = _state.first,
+            _last = _state.last;
+
+        this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, 0, lastInitialIndex, inversionStyle);
+        var firstAfterInitial = Math.max(lastInitialIndex + 1, _first);
+        if (!isVirtualizationDisabled && _first > lastInitialIndex + 1) {
+          var insertedStickySpacer = false;
+          if (stickyIndicesFromProps.size > 0) {
+            var stickyOffset = ListHeaderComponent ? 1 : 0;
+
+            for (var ii = firstAfterInitial - 1; ii > lastInitialIndex; ii--) {
+              if (stickyIndicesFromProps.has(ii + stickyOffset)) {
+                var initBlock = this._getFrameMetricsApprox(lastInitialIndex);
+                var stickyBlock = this._getFrameMetricsApprox(ii);
+                var leadSpace = stickyBlock.offset - (initBlock.offset + initBlock.length);
+                cells.push(React.createElement(View, { key: '$sticky_lead', style: _defineProperty({}, spacerKey, leadSpace), __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 667
+                  }
+                }));
+                this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, ii, ii, inversionStyle);
+                var trailSpace = this._getFrameMetricsApprox(_first).offset - (stickyBlock.offset + stickyBlock.length);
+                cells.push(React.createElement(View, { key: '$sticky_trail', style: _defineProperty({}, spacerKey, trailSpace), __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 681
+                  }
+                }));
+                insertedStickySpacer = true;
+                break;
+              }
+            }
+          }
+          if (!insertedStickySpacer) {
+            var _initBlock = this._getFrameMetricsApprox(lastInitialIndex);
+            var firstSpace = this._getFrameMetricsApprox(_first).offset - (_initBlock.offset + _initBlock.length);
+            cells.push(React.createElement(View, { key: '$lead_spacer', style: _defineProperty({}, spacerKey, firstSpace), __source: {
+                fileName: _jsxFileName,
+                lineNumber: 694
+              }
+            }));
+          }
+        }
+        this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, firstAfterInitial, _last, inversionStyle);
+        if (!this._hasWarned.keys && _usedIndexForKey) {
+          console.warn('VirtualizedList: missing keys for items, make sure to specify a key property on each ' + 'item or provide a custom keyExtractor.');
+          this._hasWarned.keys = true;
+        }
+        if (!isVirtualizationDisabled && _last < itemCount - 1) {
+          var lastFrame = this._getFrameMetricsApprox(_last);
+
+          var end = this.props.getItemLayout ? itemCount - 1 : Math.min(itemCount - 1, this._highestMeasuredFrameIndex);
+          var endFrame = this._getFrameMetricsApprox(end);
+          var tailSpacerLength = endFrame.offset + endFrame.length - (lastFrame.offset + lastFrame.length);
+          cells.push(React.createElement(View, { key: '$tail_spacer', style: _defineProperty({}, spacerKey, tailSpacerLength), __source: {
+              fileName: _jsxFileName,
+              lineNumber: 727
+            }
+          }));
+        }
+      } else if (ListEmptyComponent) {
+        var _element = React.isValidElement(ListEmptyComponent) ? ListEmptyComponent : React.createElement(ListEmptyComponent, {
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 735
+          }
+        });
+        cells.push(React.createElement(
+          View,
+          {
+            key: '$empty',
+            onLayout: this._onLayoutEmpty,
+            style: inversionStyle, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 738
+            }
+          },
+          _element
+        ));
+      }
+      if (ListFooterComponent) {
+        var _element2 = React.isValidElement(ListFooterComponent) ? ListFooterComponent : React.createElement(ListFooterComponent, {
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 751
+          }
+        });
+        cells.push(React.createElement(
+          View,
+          {
+            key: '$footer',
+            onLayout: this._onLayoutFooter,
+            style: inversionStyle, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 754
+            }
+          },
+          _element2
+        ));
+      }
+      var scrollProps = _extends({}, this.props, {
+        onContentSizeChange: this._onContentSizeChange,
+        onLayout: this._onLayout,
+        onScroll: this._onScroll,
+        onScrollBeginDrag: this._onScrollBeginDrag,
+        onScrollEndDrag: this._onScrollEndDrag,
+        onMomentumScrollEnd: this._onMomentumScrollEnd,
+        scrollEventThrottle: this.props.scrollEventThrottle,
+        stickyHeaderIndices: stickyHeaderIndices
+      });
+      if (inversionStyle) {
+        scrollProps.style = [inversionStyle, this.props.style];
+      }
+      var ret = React.cloneElement((this.props.renderScrollComponent || this._defaultRenderScrollComponent)(scrollProps), {
+        ref: this._captureScrollRef
+      }, cells);
+      if (this.props.debug) {
+        return React.createElement(
+          View,
+          { style: { flex: 1 }, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 787
+            }
+          },
+          ret,
+          this._renderDebugOverlay()
+        );
+      } else {
+        return ret;
+      }
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      this._scheduleCellsToRenderUpdate();
+    }
+  }, {
+    key: '_computeBlankness',
+    value: function _computeBlankness() {
+      this._fillRateHelper.computeBlankness(this.props, this.state, this._scrollMetrics);
+    }
+  }, {
+    key: '_onCellLayout',
+    value: function _onCellLayout(e, cellKey, index) {
+      var layout = e.nativeEvent.layout;
+      var next = {
+        offset: this._selectOffset(layout),
+        length: this._selectLength(layout),
+        index: index,
+        inLayout: true
+      };
+      var curr = this._frames[cellKey];
+      if (!curr || next.offset !== curr.offset || next.length !== curr.length || index !== curr.index) {
+        this._totalCellLength += next.length - (curr ? curr.length : 0);
+        this._totalCellsMeasured += curr ? 0 : 1;
+        this._averageCellLength = this._totalCellLength / this._totalCellsMeasured;
+        this._frames[cellKey] = next;
+        this._highestMeasuredFrameIndex = Math.max(this._highestMeasuredFrameIndex, index);
+        this._scheduleCellsToRenderUpdate();
+      } else {
+        this._frames[cellKey].inLayout = true;
+      }
+      this._computeBlankness();
+    }
+  }, {
+    key: '_renderDebugOverlay',
+    value: function _renderDebugOverlay() {
+      var normalize = this._scrollMetrics.visibleLength / this._scrollMetrics.contentLength;
+      var framesInLayout = [];
+      var itemCount = this.props.getItemCount(this.props.data);
+      for (var ii = 0; ii < itemCount; ii++) {
+        var frame = this._getFrameMetricsApprox(ii);
+        if (frame.inLayout) {
+          framesInLayout.push(frame);
+        }
+      }
+      var windowTop = this._getFrameMetricsApprox(this.state.first).offset;
+      var frameLast = this._getFrameMetricsApprox(this.state.last);
+      var windowLen = frameLast.offset + frameLast.length - windowTop;
+      var visTop = this._scrollMetrics.offset;
+      var visLen = this._scrollMetrics.visibleLength;
+      var baseStyle = { position: 'absolute', top: 0, right: 0 };
+      return React.createElement(
+        View,
+        {
+          style: _extends({}, baseStyle, {
+            bottom: 0,
+            width: 20,
+            borderColor: 'blue',
+            borderWidth: 1
+          }), __source: {
+            fileName: _jsxFileName,
+            lineNumber: 952
+          }
+        },
+        framesInLayout.map(function (f, ii) {
+          return React.createElement(View, {
+            key: 'f' + ii,
+            style: _extends({}, baseStyle, {
+              left: 0,
+              top: f.offset * normalize,
+              height: f.length * normalize,
+              backgroundColor: 'orange'
+            }),
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 961
+            }
+          });
+        }),
+        React.createElement(View, {
+          style: _extends({}, baseStyle, {
+            left: 0,
+            top: windowTop * normalize,
+            height: windowLen * normalize,
+            borderColor: 'green',
+            borderWidth: 2
+          }),
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 972
+          }
+        }),
+        React.createElement(View, {
+          style: _extends({}, baseStyle, {
+            left: 0,
+            top: visTop * normalize,
+            height: visLen * normalize,
+            borderColor: 'red',
+            borderWidth: 2
+          }),
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 982
+          }
+        })
+      );
+    }
+  }, {
+    key: '_selectLength',
+    value: function _selectLength(metrics) {
+      return !this.props.horizontal ? metrics.height : metrics.width;
+    }
+  }, {
+    key: '_selectOffset',
+    value: function _selectOffset(metrics) {
+      return !this.props.horizontal ? metrics.y : metrics.x;
+    }
+  }, {
+    key: '_maybeCallOnEndReached',
+    value: function _maybeCallOnEndReached() {
+      var _props6 = this.props,
+          data = _props6.data,
+          getItemCount = _props6.getItemCount,
+          onEndReached = _props6.onEndReached,
+          onEndReachedThreshold = _props6.onEndReachedThreshold;
+      var _scrollMetrics = this._scrollMetrics,
+          contentLength = _scrollMetrics.contentLength,
+          visibleLength = _scrollMetrics.visibleLength,
+          offset = _scrollMetrics.offset;
+
+      var distanceFromEnd = contentLength - visibleLength - offset;
+      if (onEndReached && this.state.last === getItemCount(data) - 1 && distanceFromEnd < onEndReachedThreshold * visibleLength && (this._hasDataChangedSinceEndReached || this._scrollMetrics.contentLength !== this._sentEndForContentLength)) {
+        this._hasDataChangedSinceEndReached = false;
+        this._sentEndForContentLength = this._scrollMetrics.contentLength;
+        onEndReached({ distanceFromEnd: distanceFromEnd });
+      }
+    }
+  }, {
+    key: '_scheduleCellsToRenderUpdate',
+    value: function _scheduleCellsToRenderUpdate() {
+      var _state2 = this.state,
+          first = _state2.first,
+          last = _state2.last;
+      var _scrollMetrics2 = this._scrollMetrics,
+          offset = _scrollMetrics2.offset,
+          visibleLength = _scrollMetrics2.visibleLength,
+          velocity = _scrollMetrics2.velocity;
+
+      var itemCount = this.props.getItemCount(this.props.data);
+      var hiPri = false;
+      if (first > 0 || last < itemCount - 1) {
+        var distTop = offset - this._getFrameMetricsApprox(first).offset;
+        var distBottom = this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
+        var scrollingThreshold = this.props.onEndReachedThreshold * visibleLength / 2;
+        hiPri = Math.min(distTop, distBottom) < 0 || velocity < -2 && distTop < scrollingThreshold || velocity > 2 && distBottom < scrollingThreshold;
+      }
+
+      if (hiPri && this._averageCellLength) {
+        this._updateCellsToRenderBatcher.dispose({ abort: true });
+        this._updateCellsToRender();
+        return;
+      } else {
+        this._updateCellsToRenderBatcher.schedule();
+      }
+    }
+  }, {
+    key: '_updateViewableItems',
+    value: function _updateViewableItems(data) {
+      var _this4 = this;
+
+      var getItemCount = this.props.getItemCount;
+
+
+      this._viewabilityTuples.forEach(function (tuple) {
+        tuple.viewabilityHelper.onUpdate(getItemCount(data), _this4._scrollMetrics.offset, _this4._scrollMetrics.visibleLength, _this4._getFrameMetrics, _this4._createViewToken, tuple.onViewableItemsChanged, _this4.state);
+      });
+    }
+  }]);
+
+  return VirtualizedList;
+}(React.PureComponent), _class.defaultProps = {
+  disableVirtualization: false,
+  horizontal: false,
+  initialNumToRender: 10,
+  keyExtractor: function keyExtractor(item, index) {
+    if (item.key != null) {
+      return item.key;
+    }
+    _usedIndexForKey = true;
+    return String(index);
+  },
+  maxToRenderPerBatch: 10,
+  onEndReachedThreshold: 2,
+  scrollEventThrottle: 50,
+  updateCellsBatchingPeriod: 50,
+  windowSize: 21 }, _class.contextTypes = {
+  virtualizedList: PropTypes.shape({
+    horizontal: PropTypes.bool
+  })
+}, _class.childContextTypes = {
+  virtualizedList: PropTypes.shape({
+    horizontal: PropTypes.bool
+  })
+}, _initialiseProps = function _initialiseProps() {
+  var _this5 = this;
+
+  this._onUpdateSeparators = function (keys, newProps) {
+    keys.forEach(function (key) {
+      var ref = key != null && _this5._cellRefs[key];
+      ref && ref.updateSeparatorProps(newProps);
+    });
+  };
+
+  this._averageCellLength = 0;
+  this._cellRefs = {};
+  this._hasDataChangedSinceEndReached = true;
+  this._hasWarned = {};
+  this._highestMeasuredFrameIndex = 0;
+  this._headerLength = 0;
+  this._initialScrollIndexTimeout = 0;
+  this._frames = {};
+  this._footerLength = 0;
+  this._scrollMetrics = {
+    contentLength: 0,
+    dOffset: 0,
+    dt: 10,
+    offset: 0,
+    timestamp: 0,
+    velocity: 0,
+    visibleLength: 0
+  };
+  this._scrollRef = null;
+  this._sentEndForContentLength = 0;
+  this._totalCellLength = 0;
+  this._totalCellsMeasured = 0;
+  this._viewabilityTuples = [];
+
+  this._captureScrollRef = function (ref) {
+    _this5._scrollRef = ref;
+  };
+
+  this._defaultRenderScrollComponent = function (props) {
+    if (_this5._isNestedWithSameOrientation()) {
+      return React.createElement(View, _extends({}, props, {
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 841
+        }
+      }));
+    } else if (props.onRefresh) {
+      invariant(typeof props.refreshing === 'boolean', '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' + JSON.stringify(props.refreshing) + '`');
+      return React.createElement(ScrollView, _extends({}, props, {
+        refreshControl: React.createElement(RefreshControl, {
+          refreshing: props.refreshing,
+          onRefresh: props.onRefresh,
+          progressViewOffset: props.progressViewOffset,
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 859
+          }
+        }),
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 853
+        }
+      }));
+    } else {
+      return React.createElement(ScrollView, _extends({}, props, {
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 871
+        }
+      }));
+    }
+  };
+
+  this._onCellUnmount = function (cellKey) {
+    var curr = _this5._frames[cellKey];
+    if (curr) {
+      _this5._frames[cellKey] = _extends({}, curr, { inLayout: false });
+    }
+  };
+
+  this._onLayout = function (e) {
+    _this5._scrollMetrics.visibleLength = _this5._selectLength(e.nativeEvent.layout);
+    _this5.props.onLayout && _this5.props.onLayout(e);
+    _this5._scheduleCellsToRenderUpdate();
+    _this5._maybeCallOnEndReached();
+  };
+
+  this._onLayoutEmpty = function (e) {
+    _this5.props.onLayout && _this5.props.onLayout(e);
+  };
+
+  this._onLayoutFooter = function (e) {
+    _this5._footerLength = _this5._selectLength(e.nativeEvent.layout);
+  };
+
+  this._onLayoutHeader = function (e) {
+    _this5._headerLength = _this5._selectLength(e.nativeEvent.layout);
+  };
+
+  this._onContentSizeChange = function (width, height) {
+    if (_this5.props.onContentSizeChange) {
+      _this5.props.onContentSizeChange(width, height);
+    }
+    _this5._scrollMetrics.contentLength = _this5._selectLength({ height: height, width: width });
+    _this5._scheduleCellsToRenderUpdate();
+    _this5._maybeCallOnEndReached();
+  };
+
+  this._onScroll = function (e) {
+    if (_this5.props.onScroll) {
+      _this5.props.onScroll(e);
+    }
+    var timestamp = e.timeStamp;
+    var visibleLength = _this5._selectLength(e.nativeEvent.layoutMeasurement);
+    var contentLength = _this5._selectLength(e.nativeEvent.contentSize);
+    var offset = _this5._selectOffset(e.nativeEvent.contentOffset);
+    var dt = _this5._scrollMetrics.timestamp ? Math.max(1, timestamp - _this5._scrollMetrics.timestamp) : 1;
+    if (dt > 500 && _this5._scrollMetrics.dt > 500 && contentLength > 5 * visibleLength && !_this5._hasWarned.perf) {
+      infoLog('VirtualizedList: You have a large list that is slow to update - make sure your ' + 'renderItem function renders components that follow React performance best practices ' + 'like PureComponent, shouldComponentUpdate, etc.', { dt: dt, prevDt: _this5._scrollMetrics.dt, contentLength: contentLength });
+      _this5._hasWarned.perf = true;
+    }
+    var dOffset = offset - _this5._scrollMetrics.offset;
+    var velocity = dOffset / dt;
+    _this5._scrollMetrics = {
+      contentLength: contentLength,
+      dt: dt,
+      dOffset: dOffset,
+      offset: offset,
+      timestamp: timestamp,
+      velocity: velocity,
+      visibleLength: visibleLength
+    };
+    _this5._updateViewableItems(_this5.props.data);
+    if (!_this5.props) {
+      return;
+    }
+    _this5._maybeCallOnEndReached();
+    if (velocity !== 0) {
+      _this5._fillRateHelper.activate();
+    }
+    _this5._computeBlankness();
+    _this5._scheduleCellsToRenderUpdate();
+  };
+
+  this._onScrollBeginDrag = function (e) {
+    _this5._viewabilityTuples.forEach(function (tuple) {
+      tuple.viewabilityHelper.recordInteraction();
+    });
+    _this5.props.onScrollBeginDrag && _this5.props.onScrollBeginDrag(e);
+  };
+
+  this._onScrollEndDrag = function (e) {
+    var velocity = e.nativeEvent.velocity;
+
+    if (velocity) {
+      _this5._scrollMetrics.velocity = _this5._selectOffset(velocity);
+    }
+    _this5._computeBlankness();
+    _this5.props.onScrollEndDrag && _this5.props.onScrollEndDrag(e);
+  };
+
+  this._onMomentumScrollEnd = function (e) {
+    _this5._scrollMetrics.velocity = 0;
+    _this5._computeBlankness();
+    _this5.props.onMomentumScrollEnd && _this5.props.onMomentumScrollEnd(e);
+  };
+
+  this._updateCellsToRender = function () {
+    var _props7 = _this5.props,
+        data = _props7.data,
+        getItemCount = _props7.getItemCount,
+        onEndReachedThreshold = _props7.onEndReachedThreshold;
+
+    var isVirtualizationDisabled = _this5._isVirtualizationDisabled();
+    _this5._updateViewableItems(data);
+    if (!data) {
+      return;
+    }
+    _this5.setState(function (state) {
+      var newState = void 0;
+      if (!isVirtualizationDisabled) {
+        if (_this5._scrollMetrics.visibleLength) {
+          if (!_this5.props.initialScrollIndex || _this5._scrollMetrics.offset) {
+            newState = computeWindowedRenderLimits(_this5.props, state, _this5._getFrameMetricsApprox, _this5._scrollMetrics);
+          }
+        }
+      } else {
+        var _scrollMetrics3 = _this5._scrollMetrics,
+            contentLength = _scrollMetrics3.contentLength,
+            _offset = _scrollMetrics3.offset,
+            visibleLength = _scrollMetrics3.visibleLength;
+
+        var _distanceFromEnd = contentLength - visibleLength - _offset;
+        var renderAhead = _distanceFromEnd < onEndReachedThreshold * visibleLength ? _this5.props.maxToRenderPerBatch : 0;
+        newState = {
+          first: 0,
+          last: Math.min(state.last + renderAhead, getItemCount(data) - 1)
+        };
+      }
+      return newState;
+    });
+  };
+
+  this._createViewToken = function (index, isViewable) {
+    var _props8 = _this5.props,
+        data = _props8.data,
+        getItem = _props8.getItem,
+        keyExtractor = _props8.keyExtractor;
+
+    var item = getItem(data, index);
+    return { index: index, item: item, key: keyExtractor(item, index), isViewable: isViewable };
+  };
+
+  this._getFrameMetricsApprox = function (index) {
+    var frame = _this5._getFrameMetrics(index);
+    if (frame && frame.index === index) {
+      return frame;
+    } else {
+      var _getItemLayout = _this5.props.getItemLayout;
+
+      invariant(!_getItemLayout, 'Should not have to estimate frames when a measurement metrics function is provided');
+      return {
+        length: _this5._averageCellLength,
+        offset: _this5._averageCellLength * index
+      };
+    }
+  };
+
+  this._getFrameMetrics = function (index) {
+    var _props9 = _this5.props,
+        data = _props9.data,
+        getItem = _props9.getItem,
+        getItemCount = _props9.getItemCount,
+        getItemLayout = _props9.getItemLayout,
+        keyExtractor = _props9.keyExtractor;
+
+    invariant(getItemCount(data) > index, 'Tried to get frame for out of range index ' + index);
+    var item = getItem(data, index);
+    var frame = item && _this5._frames[keyExtractor(item, index)];
+    if (!frame || frame.index !== index) {
+      if (getItemLayout) {
+        frame = getItemLayout(data, index);
+        if (__DEV__) {
+          var frameType = PropTypes.shape({
+            length: PropTypes.number.isRequired,
+            offset: PropTypes.number.isRequired,
+            index: PropTypes.number.isRequired
+          }).isRequired;
+          PropTypes.checkPropTypes({ frame: frameType }, { frame: frame }, 'frame', 'VirtualizedList.getItemLayout');
+        }
+      }
+    }
+    return frame;
+  };
+}, _temp));
+
+var CellRenderer = _wrapComponent('CellRenderer')(function (_React$Component) {
+  _inherits(CellRenderer, _React$Component);
+
+  function CellRenderer() {
+    var _ref6;
+
+    var _temp2, _this6, _ret2;
+
+    _classCallCheck(this, CellRenderer);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret2 = (_temp2 = (_this6 = _possibleConstructorReturn(this, (_ref6 = CellRenderer.__proto__ || Object.getPrototypeOf(CellRenderer)).call.apply(_ref6, [this].concat(args))), _this6), _this6.state = {
+      separatorProps: {
+        highlighted: false,
+        leadingItem: _this6.props.item
+      }
+    }, _this6._separators = {
+      highlight: function highlight() {
+        var _this6$props = _this6.props,
+            cellKey = _this6$props.cellKey,
+            prevCellKey = _this6$props.prevCellKey;
+
+        _this6.props.onUpdateSeparators([cellKey, prevCellKey], {
+          highlighted: true
+        });
+      },
+      unhighlight: function unhighlight() {
+        var _this6$props2 = _this6.props,
+            cellKey = _this6$props2.cellKey,
+            prevCellKey = _this6$props2.prevCellKey;
+
+        _this6.props.onUpdateSeparators([cellKey, prevCellKey], {
+          highlighted: false
+        });
+      },
+      updateProps: function updateProps(select, newProps) {
+        var _this6$props3 = _this6.props,
+            cellKey = _this6$props3.cellKey,
+            prevCellKey = _this6$props3.prevCellKey;
+
+        _this6.props.onUpdateSeparators([select === 'leading' ? prevCellKey : cellKey], newProps);
+      }
+    }, _temp2), _possibleConstructorReturn(_this6, _ret2);
+  }
+
+  _createClass(CellRenderer, [{
+    key: 'updateSeparatorProps',
+    value: function updateSeparatorProps(newProps) {
+      this.setState(function (state) {
+        return {
+          separatorProps: _extends({}, state.separatorProps, newProps)
+        };
+      });
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.props.onUnmount(this.props.cellKey);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props10 = this.props,
+          CellRendererComponent = _props10.CellRendererComponent,
+          ItemSeparatorComponent = _props10.ItemSeparatorComponent,
+          fillRateHelper = _props10.fillRateHelper,
+          horizontal = _props10.horizontal,
+          item = _props10.item,
+          index = _props10.index,
+          inversionStyle = _props10.inversionStyle,
+          parentProps = _props10.parentProps;
+      var renderItem = parentProps.renderItem,
+          getItemLayout = parentProps.getItemLayout;
+
+      invariant(renderItem, 'no renderItem!');
+      var element = renderItem({
+        item: item,
+        index: index,
+        separators: this._separators
+      });
+      var onLayout = getItemLayout && !parentProps.debug && !fillRateHelper.enabled() ? undefined : this.props.onLayout;
+
+      var itemSeparator = ItemSeparatorComponent && React.createElement(ItemSeparatorComponent, _extends({}, this.state.separatorProps, {
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 1354
+        }
+      }));
+      var cellStyle = inversionStyle ? horizontal ? [{ flexDirection: 'row-reverse' }, inversionStyle] : [{ flexDirection: 'column-reverse' }, inversionStyle] : horizontal ? [{ flexDirection: 'row' }, inversionStyle] : inversionStyle;
+      if (!CellRendererComponent) {
+        return React.createElement(
+          View,
+          { style: cellStyle, onLayout: onLayout, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 1363
+            }
+          },
+          element,
+          itemSeparator
+        );
+      }
+      return React.createElement(
+        CellRendererComponent,
+        _extends({}, this.props, {
+          style: cellStyle,
+          onLayout: onLayout, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 1370
+          }
+        }),
+        element,
+        itemSeparator
+      );
+    }
+  }]);
+
+  return CellRenderer;
+}(React.Component));
+
+var styles = StyleSheet.create({
+  verticallyInverted: {
+    transform: [{ scaleY: -1 }]
+  },
+  horizontallyInverted: {
+    transform: [{ scaleX: -1 }]
+  }
+});
+
+module.exports = VirtualizedList;

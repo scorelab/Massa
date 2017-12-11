@@ -1,0 +1,218 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.processFontFamily = processFontFamily;
+exports.isLoaded = isLoaded;
+exports.isLoading = isLoading;
+exports.loadAsync = loadAsync;
+exports.style = style;
+
+var _invariant = require('invariant');
+
+var _invariant2 = _interopRequireDefault(_invariant);
+
+var _reactNative = require('react-native');
+
+var _Asset = require('./Asset');
+
+var _Asset2 = _interopRequireDefault(_Asset);
+
+var _Constants = require('./Constants');
+
+var _Constants2 = _interopRequireDefault(_Constants);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var loaded = {};
+var loadPromises = {};
+
+function processFontFamily(name) {
+  if (!name || _Constants2.default.systemFonts.includes(name) || name === 'System') {
+    return name;
+  }
+
+  if (name.includes(_Constants2.default.sessionId)) {
+    return name;
+  }
+
+  if (!isLoaded(name)) {
+    if (__DEV__) {
+      if (isLoading(name)) {
+        console.error('You started loading \'' + name + '\', but used it before it finished loading\n\n' + '- You need to wait for Expo.Font.loadAsync to complete before using the font.\n\n' + '- We recommend loading all fonts before rendering the app, and rendering only ' + 'Expo.AppLoading while waiting for loading to complete.');
+      } else {
+        console.error('fontFamily \'' + name + '\' is not a system font and has not been loaded through ' + 'Expo.Font.loadAsync.\n\n' + '- If you intended to use a system font, make sure you typed the name ' + 'correctly and that it is supported by your device operating system.\n\n' + '- If this is a custom font, be sure to load it with Expo.Font.loadAsync.');
+      }
+    }
+
+    return 'System';
+  }
+
+  return 'ExponentFont-' + _getNativeFontName(name);
+}
+
+function isLoaded(name) {
+  return loaded.hasOwnProperty(name);
+}
+
+function isLoading(name) {
+  return loadPromises.hasOwnProperty(name);
+}
+
+function loadAsync(nameOrMap, uriOrModuleOrAsset) {
+  var _this = this;
+
+  var fontMap, names, name, asset;
+  return regeneratorRuntime.async(function loadAsync$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          if (!Array.isArray(nameOrMap)) {
+            _context2.next = 7;
+            break;
+          }
+
+          console.warn('Passing in an array to Font.loadAsync like Font.loadAsync([fontMap1, fontMap2, fontMap3]) is deprecated and will be removed in SDK 25. Instead, pass in a single font map. The object spread syntax may help with this: Font.loadAsync({ ...fontMap1, ...fontMap2, ...fontMap3 })');
+          _context2.next = 4;
+          return regeneratorRuntime.awrap(Promise.all(nameOrMap.map(loadAsync)));
+
+        case 4:
+          return _context2.abrupt('return');
+
+        case 7:
+          if (!(typeof nameOrMap === 'object')) {
+            _context2.next = 13;
+            break;
+          }
+
+          fontMap = nameOrMap;
+          names = Object.keys(fontMap);
+          _context2.next = 12;
+          return regeneratorRuntime.awrap(Promise.all(names.map(function (name) {
+            return loadAsync(name, fontMap[name]);
+          })));
+
+        case 12:
+          return _context2.abrupt('return');
+
+        case 13:
+          name = nameOrMap;
+
+          if (!loaded[name]) {
+            _context2.next = 16;
+            break;
+          }
+
+          return _context2.abrupt('return');
+
+        case 16:
+          if (!loadPromises[name]) {
+            _context2.next = 18;
+            break;
+          }
+
+          return _context2.abrupt('return', loadPromises[name]);
+
+        case 18:
+
+          (0, _invariant2.default)(uriOrModuleOrAsset, 'No source from which to load font "' + name + '"');
+          asset = _getAssetForSource(uriOrModuleOrAsset);
+
+          loadPromises[name] = function _callee() {
+            return regeneratorRuntime.async(function _callee$(_context) {
+              while (1) {
+                switch (_context.prev = _context.next) {
+                  case 0:
+                    _context.prev = 0;
+                    _context.next = 3;
+                    return regeneratorRuntime.awrap(_loadSingleFontAsync(name, asset));
+
+                  case 3:
+                    loaded[name] = true;
+
+                  case 4:
+                    _context.prev = 4;
+
+                    delete loadPromises[name];
+                    return _context.finish(4);
+
+                  case 7:
+                  case 'end':
+                    return _context.stop();
+                }
+              }
+            }, null, _this, [[0,, 4, 7]]);
+          }();
+
+          _context2.next = 23;
+          return regeneratorRuntime.awrap(loadPromises[name]);
+
+        case 23:
+        case 'end':
+          return _context2.stop();
+      }
+    }
+  }, null, this);
+}
+
+function _getAssetForSource(uriOrModuleOrAsset) {
+  if (typeof uriOrModuleOrAsset === 'string') {
+    throw new Error('Loading fonts from remote URIs is temporarily not supported. Please download the font file and load it using require. See: https://docs.expo.io/versions/latest/guides/using-custom-fonts.html#downloading-the-font');
+  }
+
+  if (typeof uriOrModuleOrAsset === 'number') {
+    return _Asset2.default.fromModule(uriOrModuleOrAsset);
+  }
+
+  return uriOrModuleOrAsset;
+}
+
+function _loadSingleFontAsync(name, asset) {
+  return regeneratorRuntime.async(function _loadSingleFontAsync$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          _context3.next = 2;
+          return regeneratorRuntime.awrap(asset.downloadAsync());
+
+        case 2:
+          if (asset.downloaded) {
+            _context3.next = 4;
+            break;
+          }
+
+          throw new Error('Failed to download asset for font "' + name + '"');
+
+        case 4:
+          _context3.next = 6;
+          return regeneratorRuntime.awrap(_reactNative.NativeModules.ExponentFontLoader.loadAsync(_getNativeFontName(name), asset.localUri));
+
+        case 6:
+        case 'end':
+          return _context3.stop();
+      }
+    }
+  }, null, this);
+}
+
+function style(name) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  console.warn('Expo.Font.style() is deprecated and will be removed in SDK 24. After loading a font with a specified name with Font.loadAsync, you can just reference that font in the fontFamily of your component\'s style.');
+
+  if (!name) {
+    return {
+      fontFamily: undefined
+    };
+  }
+
+  if (!loaded[name] && !options.ignoreWarning) {
+    console.warn('[Expo.Font] No font "' + name + '", or it hasn\'t been loaded yet');
+  }
+  return {
+    fontFamily: 'ExponentFont-' + _getNativeFontName(name)
+  };
+}
+
+function _getNativeFontName(name) {
+  return _Constants2.default.sessionId + '-' + name;
+}
