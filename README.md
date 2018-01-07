@@ -11,3 +11,8 @@ Massa allows users to split a large file (or a torrent) and separately download 
 npm install
 npm start
 ```
+### Splash Screen Screenshots
+**Android** <br>
+<img src="https://github.com/padamchopra/Massa/blob/master/android-massa.png" alt="Android Screenshot" height="500"> <br>
+**iOS** <br>
+<img src="https://github.com/padamchopra/Massa/blob/master/iosMassa.jpeg" alt="iOS Screenshot" height="500">
