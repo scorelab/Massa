@@ -1,3 +1,12 @@
+
+
+Massa - Mobile Accessible Social Sharing Agent
+
+The Document Below will help you start ...
+https://docs.google.com/document/d/1Z7jk5WzJ2_wMt0_riYiB6q5hmrhU_Uybod42j_cXJAE/edit
+
+
+#The Readme Created By Default 
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
 
 Below you'll find information about performing common tasks. The most recent version of this guide is available [here](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md).
