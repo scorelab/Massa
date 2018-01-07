@@ -1,5 +1,27 @@
 {
   "expo": {
-    "sdkVersion": "23.0.0"
+    "name": "MASSA",
+    "description": "Try out react-navigation now with this awesome playground",
+    "version": "1.0.0",
+    "slug": "MASSA",
+    "privacy": "public",
+    "orientation": "portrait",
+    "primaryColor": "#cccccc",
+    "icon": "lol.png",
+    "loading": {
+      "icon": "lol.png",
+      "hideExponentText": false
+    },
+    "sdkVersion": "24.0.0",
+    "entryPoint": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
+    "packagerOpts": {
+      "assetExts": [
+        "ttf",
+        "mp4"
+      ]
+    },
+    "ios": {
+      "supportsTablet": true
+    }
   }
 }
