@@ -1,0 +1,13 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createReactNativeComponentClass = require('react-native/Libraries/Renderer/shims/createReactNativeComponentClass.js');
+
+var _createReactNativeComponentClass2 = _interopRequireDefault(_createReactNativeComponentClass);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (uiViewClassName, getViewConfig) {
+  return _createReactNativeComponentClass2.default.length >= 2 ? (0, _createReactNativeComponentClass2.default)(uiViewClassName, getViewConfig) : (0, _createReactNativeComponentClass2.default)(getViewConfig());
+};

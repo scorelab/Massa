@@ -1,0 +1,178 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react2 = require('react');
+
+var React = _interopRequireWildcard(_react2);
+
+var _index = require('./../../../react-transform-hmr/lib/index.js');
+
+var _index2 = _interopRequireDefault(_index);
+
+var _jsxFileName = '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/expo/src/launch/RootErrorBoundary.js';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _reactNative = require('react-native');
+
+var _AppLoading = require('./AppLoading');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _components = {
+  RootErrorBoundary: {
+    displayName: 'RootErrorBoundary'
+  }
+};
+
+var _reactTransformHmrLibIndexJs2 = (0, _index2.default)({
+  filename: '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/expo/src/launch/RootErrorBoundary.js',
+  components: _components,
+  locals: [module],
+  imports: [React.default]
+});
+
+function _wrapComponent(id) {
+  return function (Component) {
+    return _reactTransformHmrLibIndexJs2(Component, id);
+  };
+}
+
+var RootErrorBoundary = _wrapComponent('RootErrorBoundary')(function (_React$Component) {
+  _inherits(RootErrorBoundary, _React$Component);
+
+  function RootErrorBoundary() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    _classCallCheck(this, RootErrorBoundary);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = RootErrorBoundary.__proto__ || Object.getPrototypeOf(RootErrorBoundary)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      error: null
+    }, _this._appLoadingIsMounted = false, _this._subscribeToGlobalErrors = function () {
+      _this._appLoadingIsMounted = true;
+
+      var ErrorUtils = global.ErrorUtils;
+      var originalErrorHandler = ErrorUtils.getGlobalHandler();
+
+      ErrorUtils.setGlobalHandler(function (error, isFatal) {
+        if (_this._appLoadingIsMounted) {
+          _reactNative.NativeModules.ExponentAppLoadingManager && _reactNative.NativeModules.ExponentAppLoadingManager.finishedAsync();
+
+          if (isFatal) {
+            _this.setState({ error: error });
+          }
+        }
+
+        originalErrorHandler(error, isFatal);
+      });
+    }, _this._unsubscribeFromGlobalErrors = function () {
+      _this._appLoadingIsMounted = false;
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
+
+  _createClass(RootErrorBoundary, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      if (__DEV__) {
+        (0, _AppLoading.getAppLoadingLifecycleEmitter)().once('componentDidMount', this._subscribeToGlobalErrors);
+        (0, _AppLoading.getAppLoadingLifecycleEmitter)().once('componentWillUnmount', this._unsubscribeFromGlobalErrors);
+      }
+    }
+  }, {
+    key: 'componentDidCatch',
+    value: function componentDidCatch(error) {
+      if (this._appLoadingIsMounted) {
+        _reactNative.NativeModules.ExponentAppLoadingManager && _reactNative.NativeModules.ExponentAppLoadingManager.finishedAsync();
+      }
+
+      console.error(error);
+
+      if (__DEV__) {
+        this.setState({ error: error });
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      if (this.state.error) {
+        return React.createElement(
+          _reactNative.View,
+          { style: styles.container, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 81
+            }
+          },
+          React.createElement(
+            _reactNative.Text,
+            { style: styles.warningIcon, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 82
+              }
+            },
+            '\u26A0\uFE0F'
+          ),
+          React.createElement(
+            _reactNative.Text,
+            { style: [styles.paragraph, { color: '#000' }], __source: {
+                fileName: _jsxFileName,
+                lineNumber: 83
+              }
+            },
+            'A fatal error was encountered while rendering the root component.'
+          ),
+          React.createElement(
+            _reactNative.Text,
+            { style: styles.paragraph, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 86
+              }
+            },
+            'Review your application logs for more information, and reload the app when the issue is resolved. In production, your app would have crashed.'
+          )
+        );
+      } else {
+        return this.props.children;
+      }
+    }
+  }]);
+
+  return RootErrorBoundary;
+}(React.Component));
+
+exports.default = RootErrorBoundary;
+
+
+var styles = _reactNative.StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  paragraph: {
+    marginBottom: 10,
+    textAlign: 'center',
+    marginHorizontal: 30,
+    maxWidth: 350,
+    fontSize: 15,
+    color: '#888'
+  },
+  warningIcon: {
+    fontSize: 40,
+    marginBottom: 20
+  }
+});

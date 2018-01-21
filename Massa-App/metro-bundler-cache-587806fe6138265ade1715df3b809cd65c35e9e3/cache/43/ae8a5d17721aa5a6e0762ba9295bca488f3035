@@ -1,0 +1,73 @@
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _reactNative = require('react-native');
+
+var RNAdMobInterstitial = _reactNative.NativeModules.RNAdMobInterstitial;
+
+var eventHandlers = {
+  interstitialDidLoad: new Map(),
+  interstitialDidFailToLoad: new Map(),
+  interstitialDidOpen: new Map(),
+  interstitialDidClose: new Map(),
+  interstitialWillLeaveApplication: new Map()
+};
+
+var addEventListener = function addEventListener(type, handler) {
+  switch (type) {
+    case 'interstitialDidLoad':
+      eventHandlers[type].set(handler, _reactNative.DeviceEventEmitter.addListener(type, handler));
+      break;
+    case 'interstitialDidFailToLoad':
+      eventHandlers[type].set(handler, _reactNative.DeviceEventEmitter.addListener(type, function (error) {
+        handler(error);
+      }));
+      break;
+    case 'interstitialDidOpen':
+      eventHandlers[type].set(handler, _reactNative.DeviceEventEmitter.addListener(type, handler));
+      break;
+    case 'interstitialDidClose':
+      eventHandlers[type].set(handler, _reactNative.DeviceEventEmitter.addListener(type, handler));
+      break;
+    case 'interstitialWillLeaveApplication':
+      eventHandlers[type].set(handler, _reactNative.DeviceEventEmitter.addListener(type, handler));
+      break;
+    default:
+      console.log('Event with type ' + type + ' does not exist.');
+  }
+};
+
+var removeEventListener = function removeEventListener(type, handler) {
+  if (!eventHandlers[type].has(handler)) {
+    return;
+  }
+  eventHandlers[type].get(handler).remove();
+  eventHandlers[type].delete(handler);
+};
+
+var removeAllListeners = function removeAllListeners() {
+  _reactNative.DeviceEventEmitter.removeAllListeners('interstitialDidLoad');
+  _reactNative.DeviceEventEmitter.removeAllListeners('interstitialDidFailToLoad');
+  _reactNative.DeviceEventEmitter.removeAllListeners('interstitialDidOpen');
+  _reactNative.DeviceEventEmitter.removeAllListeners('interstitialDidClose');
+  _reactNative.DeviceEventEmitter.removeAllListeners('interstitialWIllLeaveApplication');
+};
+
+module.exports = _extends({}, RNAdMobInterstitial, {
+  requestAd: function requestAd() {
+    var cb = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
+    return RNAdMobInterstitial.requestAd(cb);
+  },
+  showAd: function showAd() {
+    var cb = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
+    return RNAdMobInterstitial.showAd(cb);
+  },
+  addEventListener: addEventListener,
+  removeEventListener: removeEventListener,
+  removeAllListeners: removeAllListeners,
+  setAdUnitId: function setAdUnitId(id) {
+    RNAdMobInterstitial.setAdUnitID(id);
+    console.warn('setAdUnitId will be deprecated soon. Please use setAdUnitID instead.');
+  }
+});

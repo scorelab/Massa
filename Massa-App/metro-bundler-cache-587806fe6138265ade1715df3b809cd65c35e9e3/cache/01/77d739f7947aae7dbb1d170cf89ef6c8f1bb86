@@ -1,0 +1,186 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react2 = require('react');
+
+var _react3 = _interopRequireDefault(_react2);
+
+var _index = require('./../../../react-transform-hmr/lib/index.js');
+
+var _index2 = _interopRequireDefault(_index);
+
+var _jsxFileName = '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/expo/src/launch/AppLoading.js';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+exports.getAppLoadingLifecycleEmitter = getAppLoadingLifecycleEmitter;
+
+var _fbemitter = require('fbemitter');
+
+var _AppLoadingNativeWrapper = require('./AppLoadingNativeWrapper');
+
+var _AppLoadingNativeWrapper2 = _interopRequireDefault(_AppLoadingNativeWrapper);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _components = {
+  AppLoading: {
+    displayName: 'AppLoading'
+  }
+};
+
+var _reactTransformHmrLibIndexJs2 = (0, _index2.default)({
+  filename: '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/expo/src/launch/AppLoading.js',
+  components: _components,
+  locals: [module],
+  imports: [_react3.default]
+});
+
+function _wrapComponent(id) {
+  return function (Component) {
+    return _reactTransformHmrLibIndexJs2(Component, id);
+  };
+}
+
+var AppLoading = _wrapComponent('AppLoading')(function (_React$Component) {
+  _inherits(AppLoading, _React$Component);
+
+  function AppLoading() {
+    var _ref,
+        _this2 = this;
+
+    var _temp, _this, _ret;
+
+    _classCallCheck(this, AppLoading);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = AppLoading.__proto__ || Object.getPrototypeOf(AppLoading)).call.apply(_ref, [this].concat(args))), _this), _this._startLoadingAppResourcesAsync = function _callee() {
+      return regeneratorRuntime.async(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              if (_this.props.onFinish) {
+                _context.next = 2;
+                break;
+              }
+
+              throw new Error('AppLoading onFinish prop is required if startAsync is provided');
+
+            case 2:
+              _context.prev = 2;
+              _context.next = 5;
+              return regeneratorRuntime.awrap(_this.props.startAsync());
+
+            case 5:
+              _context.next = 16;
+              break;
+
+            case 7:
+              _context.prev = 7;
+              _context.t0 = _context['catch'](2);
+
+              if (_this._isMounted) {
+                _context.next = 11;
+                break;
+              }
+
+              return _context.abrupt('return');
+
+            case 11:
+              if (!_this.props.onError) {
+                _context.next = 15;
+                break;
+              }
+
+              _this.props.onError(_context.t0);
+              _context.next = 16;
+              break;
+
+            case 15:
+              throw _context.t0;
+
+            case 16:
+              _context.prev = 16;
+
+              if (_this._isMounted) {
+                _context.next = 19;
+                break;
+              }
+
+              return _context.abrupt('return');
+
+            case 19:
+              if (_this.props.onFinish) {
+                _this.props.onFinish();
+              }
+              return _context.finish(16);
+
+            case 21:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, null, _this2, [[2, 7, 16, 21]]);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
+
+  _createClass(AppLoading, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this._isMounted = true;
+      _emitEvent('componentDidMount');
+
+      if (this.props.startAsync) {
+        this._startLoadingAppResourcesAsync().catch(function (error) {
+          console.error('AppLoading threw an unexpected error when loading:\n' + error.stack);
+        });
+      }
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this._isMounted = false;
+      _emitEvent('componentWillUnmount');
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react3.default.createElement(_AppLoadingNativeWrapper2.default, {
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 67
+        }
+      });
+    }
+  }]);
+
+  return AppLoading;
+}(_react3.default.Component));
+
+exports.default = AppLoading;
+
+
+var _lifecycleEmitter = void 0;
+
+function _emitEvent(event) {
+  if (_lifecycleEmitter) {
+    _lifecycleEmitter.emit(event);
+  }
+}
+
+function getAppLoadingLifecycleEmitter() {
+  if (!_lifecycleEmitter) {
+    _lifecycleEmitter = new _fbemitter.EventEmitter();
+  }
+  return _lifecycleEmitter;
+}

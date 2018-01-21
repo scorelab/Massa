@@ -1,0 +1,114 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.speak = speak;
+exports.isSpeakingAsync = isSpeakingAsync;
+exports.stop = stop;
+
+var _reactNative = require('react-native');
+
+var ExponentSpeech = _reactNative.NativeModules.ExponentSpeech;
+
+var SpeechEventEmitter = new _reactNative.NativeEventEmitter(ExponentSpeech);
+
+var _GLOBAL_ID = 1;
+
+var _CALLBACKS = {};
+var _LISTENERS_SET = false;
+
+function _unregisterListenersIfNeeded() {
+  if (Object.keys(_CALLBACKS).length === 0) {
+    removeSpeakingListener('Exponent.speakingStarted');
+    removeSpeakingListener('Exponent.speakingDone');
+    removeSpeakingListener('Exponent.speakingStopped');
+    removeSpeakingListener('Exponent.speakingError');
+    _LISTENERS_SET = false;
+  }
+}
+
+function _registerListenersIfNeeded() {
+  if (_LISTENERS_SET) return;
+  _LISTENERS_SET = true;
+  setSpeakingListener('Exponent.speakingStarted', function (_ref) {
+    var id = _ref.id;
+
+    var options = _CALLBACKS[id];
+    if (options && options.onStart) {
+      options.onStart();
+    }
+  });
+  setSpeakingListener('Exponent.speakingDone', function (_ref2) {
+    var id = _ref2.id;
+
+    var options = _CALLBACKS[id];
+    if (options && options.onDone) {
+      options.onDone();
+    }
+    delete _CALLBACKS[id];
+    _unregisterListenersIfNeeded();
+  });
+  setSpeakingListener('Exponent.speakingStopped', function (_ref3) {
+    var id = _ref3.id;
+
+    var options = _CALLBACKS[id];
+    if (options && options.onStopped) {
+      options.onStopped();
+    }
+    delete _CALLBACKS[id];
+    _unregisterListenersIfNeeded();
+  });
+  setSpeakingListener('Exponent.speakingError', function (_ref4) {
+    var id = _ref4.id,
+        error = _ref4.error;
+
+    var options = _CALLBACKS[id];
+    if (options && options.onError) {
+      options.onError(error);
+    }
+    delete _CALLBACKS[id];
+    _unregisterListenersIfNeeded();
+  });
+}
+
+function speak(text) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  var id = _GLOBAL_ID++;
+  _CALLBACKS[id] = options;
+  _registerListenersIfNeeded();
+  ExponentSpeech.speak(String(id), text, options);
+}
+
+function isSpeakingAsync() {
+  return regeneratorRuntime.async(function isSpeakingAsync$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          _context.next = 2;
+          return regeneratorRuntime.awrap(ExponentSpeech.isSpeaking());
+
+        case 2:
+          return _context.abrupt('return', _context.sent);
+
+        case 3:
+        case 'end':
+          return _context.stop();
+      }
+    }
+  }, null, this);
+}
+
+function stop() {
+  ExponentSpeech.stop();
+}
+
+function setSpeakingListener(eventName, callback) {
+  if (SpeechEventEmitter.listeners(eventName).length > 0) {
+    SpeechEventEmitter.removeAllListeners(eventName);
+  }
+  SpeechEventEmitter.addListener(eventName, callback);
+}
+
+function removeSpeakingListener(eventName) {
+  SpeechEventEmitter.removeAllListeners(eventName);
+}

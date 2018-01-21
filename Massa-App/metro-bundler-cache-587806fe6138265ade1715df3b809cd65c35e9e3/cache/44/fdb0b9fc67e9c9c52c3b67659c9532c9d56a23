@@ -1,0 +1,151 @@
+
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var Platform = require('Platform');
+var ReactNativeBridgeEventPlugin = require('ReactNativeBridgeEventPlugin');
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+var UIManager = require('UIManager');
+
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var insetsDiffer = require('insetsDiffer');
+var matricesDiffer = require('matricesDiffer');
+var pointsDiffer = require('pointsDiffer');
+var processColor = require('processColor');
+var resolveAssetSource = require('resolveAssetSource');
+var sizesDiffer = require('sizesDiffer');
+var verifyPropTypes = require('verifyPropTypes');
+
+var invariant = require('fbjs/lib/invariant');
+var warning = require('fbjs/lib/warning');
+
+var hasAttachedDefaultEventTypes = false;
+
+function requireNativeComponent(viewName, componentInterface, extraConfig) {
+  function attachDefaultEventTypes(viewConfig) {
+    if (Platform.OS === 'android') {
+      if (UIManager.ViewManagerNames) {
+        viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
+      } else {
+        viewConfig.bubblingEventTypes = merge(viewConfig.bubblingEventTypes, UIManager.genericBubblingEventTypes);
+        viewConfig.directEventTypes = merge(viewConfig.directEventTypes, UIManager.genericDirectEventTypes);
+      }
+    }
+  }
+
+  function merge(destination, source) {
+    if (!source) {
+      return destination;
+    }
+    if (!destination) {
+      return source;
+    }
+
+    for (var key in source) {
+      if (!source.hasOwnProperty(key)) {
+        continue;
+      }
+
+      var sourceValue = source[key];
+      if (destination.hasOwnProperty(key)) {
+        var destinationValue = destination[key];
+        if (typeof sourceValue === 'object' && typeof destinationValue === 'object') {
+          sourceValue = merge(destinationValue, sourceValue);
+        }
+      }
+      destination[key] = sourceValue;
+    }
+    return destination;
+  }
+
+  function getViewConfig() {
+    var viewConfig = UIManager[viewName];
+
+    invariant(viewConfig != null && !viewConfig.NativeProps != null, 'Native component for "%s" does not exist', viewName);
+
+    viewConfig.uiViewClassName = viewName;
+    viewConfig.validAttributes = {};
+
+    if (componentInterface) {
+      viewConfig.propTypes = typeof componentInterface.__propTypesSecretDontUseThesePlease === 'object' ? componentInterface.__propTypesSecretDontUseThesePlease : componentInterface.propTypes;
+    } else {
+      viewConfig.propTypes = null;
+    }
+
+    var baseModuleName = viewConfig.baseModuleName;
+    var nativeProps = _extends({}, viewConfig.NativeProps);
+    while (baseModuleName) {
+      var baseModule = UIManager[baseModuleName];
+      if (!baseModule) {
+        warning(false, 'Base module "%s" does not exist', baseModuleName);
+        baseModuleName = null;
+      } else {
+        nativeProps = _extends({}, nativeProps, baseModule.NativeProps);
+        baseModuleName = baseModule.baseModuleName;
+      }
+    }
+
+    for (var key in nativeProps) {
+      var useAttribute = false;
+      var attribute = {};
+
+      var differ = TypeToDifferMap[nativeProps[key]];
+      if (differ) {
+        attribute.diff = differ;
+        useAttribute = true;
+      }
+
+      var processor = TypeToProcessorMap[nativeProps[key]];
+      if (processor) {
+        attribute.process = processor;
+        useAttribute = true;
+      }
+
+      viewConfig.validAttributes[key] = useAttribute ? attribute : true;
+    }
+
+    viewConfig.validAttributes.style = ReactNativeStyleAttributes;
+
+    if (__DEV__) {
+      componentInterface && verifyPropTypes(componentInterface, viewConfig, extraConfig && extraConfig.nativeOnly);
+    }
+
+    if (!hasAttachedDefaultEventTypes) {
+      attachDefaultEventTypes(viewConfig);
+      hasAttachedDefaultEventTypes = true;
+    }
+
+    ReactNativeBridgeEventPlugin.processEventTypes(viewConfig);
+
+    return viewConfig;
+  }
+
+  return createReactNativeComponentClass(viewName, getViewConfig);
+}
+
+var TypeToDifferMap = {
+  CATransform3D: matricesDiffer,
+  CGPoint: pointsDiffer,
+  CGSize: sizesDiffer,
+  UIEdgeInsets: insetsDiffer
+};
+
+function processColorArray(colors) {
+  return colors && colors.map(processColor);
+}
+
+var TypeToProcessorMap = {
+  CGColor: processColor,
+  CGColorArray: processColorArray,
+  UIColor: processColor,
+  UIColorArray: processColorArray,
+  CGImage: resolveAssetSource,
+  UIImage: resolveAssetSource,
+  RCTImageSource: resolveAssetSource,
+
+  Color: processColor,
+  ColorArray: processColorArray
+};
+
+module.exports = requireNativeComponent;

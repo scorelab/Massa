@@ -1,0 +1,169 @@
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react2 = require('react');
+
+var _react3 = _interopRequireDefault(_react2);
+
+var _index = require('./../../react-transform-hmr/lib/index.js');
+
+var _index2 = _interopRequireDefault(_index);
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _class,
+    _temp,
+    _jsxFileName = '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/react-native-svg/elements/Svg.js';
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reactNative = require('react-native');
+
+var _extractViewBox = require('../lib/extract/extractViewBox');
+
+var _extractViewBox2 = _interopRequireDefault(_extractViewBox);
+
+var _attributes = require('../lib/attributes');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _components = {
+    Svg: {
+        displayName: 'Svg'
+    }
+};
+
+var _reactTransformHmrLibIndexJs2 = (0, _index2.default)({
+    filename: '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/react-native-svg/elements/Svg.js',
+    components: _components,
+    locals: [module],
+    imports: [_react3.default]
+});
+
+function _wrapComponent(id) {
+    return function (Component) {
+        return _reactTransformHmrLibIndexJs2(Component, id);
+    };
+}
+
+var RNSVGSvgViewManager = _reactNative.NativeModules.RNSVGSvgViewManager;
+
+var id = 0;
+
+var styles = _reactNative.StyleSheet.create({
+    svg: {
+        backgroundColor: 'transparent'
+    }
+});
+
+var Svg = _wrapComponent('Svg')((_temp = _class = function (_Component) {
+    _inherits(Svg, _Component);
+
+    function Svg() {
+        _classCallCheck(this, Svg);
+
+        var _this = _possibleConstructorReturn(this, (Svg.__proto__ || Object.getPrototypeOf(Svg)).apply(this, arguments));
+
+        _this.measureInWindow = function () {
+            var _this$root;
+
+            (_this$root = _this.root).measureInWindow.apply(_this$root, arguments);
+        };
+
+        _this.measure = function () {
+            var _this$root2;
+
+            (_this$root2 = _this.root).measure.apply(_this$root2, arguments);
+        };
+
+        _this.measureLayout = function () {
+            var _this$root3;
+
+            (_this$root3 = _this.root).measureLayout.apply(_this$root3, arguments);
+        };
+
+        _this.setNativeProps = function () {
+            var _this$root4;
+
+            (_this$root4 = _this.root).setNativeProps.apply(_this$root4, arguments);
+        };
+
+        _this.toDataURL = function (callback) {
+            callback && RNSVGSvgViewManager.toDataURL((0, _reactNative.findNodeHandle)(_this.root), callback);
+        };
+
+        id++;
+        _this.id = id;
+        _this.onDataURLCallbacks = [];
+        return _this;
+    }
+
+    _createClass(Svg, [{
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            var _props = this.props,
+                opacity = _props.opacity,
+                width = _props.width,
+                height = _props.height,
+                viewBox = _props.viewBox,
+                preserveAspectRatio = _props.preserveAspectRatio,
+                style = _props.style,
+                props = _objectWithoutProperties(_props, ['opacity', 'width', 'height', 'viewBox', 'preserveAspectRatio', 'style']);
+
+            var dimensions = void 0;
+
+            if (width && height) {
+                dimensions = {
+                    width: +width,
+                    height: +height,
+                    flex: 0
+                };
+            }
+
+            return _react3.default.createElement(NativeSvgView, _extends({}, props, (0, _extractViewBox2.default)({ viewBox: viewBox, preserveAspectRatio: preserveAspectRatio }), {
+                ref: function ref(ele) {
+                    _this2.root = ele;
+                },
+                style: [styles.svg, style, !isNaN(+opacity) && {
+                    opacity: +opacity
+                }, dimensions],
+                __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 80
+                }
+            }));
+        }
+    }]);
+
+    return Svg;
+}(_react2.Component), _class.displayName = 'Svg', _class.propTypes = _extends({}, _reactNative.ViewPropTypes, {
+    opacity: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
+    width: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
+    height: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
+
+    viewBox: _propTypes2.default.string,
+    preserveAspectRatio: _propTypes2.default.string
+}), _class.defaultProps = {
+    preserveAspectRatio: 'xMidYMid meet'
+}, _temp));
+
+var NativeSvgView = (0, _reactNative.requireNativeComponent)('RNSVGSvgView', null, {
+    nativeOnly: _extends({}, _attributes.ViewBoxAttributes)
+});
+
+exports.default = Svg;

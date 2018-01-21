@@ -1,0 +1,115 @@
+
+'use strict';
+
+var _react2 = require('react');
+
+var _react3 = _interopRequireDefault(_react2);
+
+var _index = require('./../../../../react-transform-hmr/lib/index.js');
+
+var _index2 = _interopRequireDefault(_index);
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _class,
+    _temp,
+    _jsxFileName = '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/react-native/Libraries/Components/TabBarIOS/TabBarIOS.ios.js';
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _components = {
+  TabBarIOS: {
+    displayName: 'TabBarIOS'
+  }
+};
+
+var _reactTransformHmrLibIndexJs2 = (0, _index2.default)({
+  filename: '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/react-native/Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
+  components: _components,
+  locals: [module],
+  imports: [_react3.default]
+});
+
+function _wrapComponent(id) {
+  return function (Component) {
+    return _reactTransformHmrLibIndexJs2(Component, id);
+  };
+}
+
+var ColorPropType = require('ColorPropType');
+var React = require('React');
+var PropTypes = require('prop-types');
+var StyleSheet = require('StyleSheet');
+var TabBarItemIOS = require('TabBarItemIOS');
+var ViewPropTypes = require('ViewPropTypes');
+
+var requireNativeComponent = require('requireNativeComponent');
+
+var TabBarIOS = _wrapComponent('TabBarIOS')((_temp = _class = function (_React$Component) {
+  _inherits(TabBarIOS, _React$Component);
+
+  function TabBarIOS() {
+    _classCallCheck(this, TabBarIOS);
+
+    return _possibleConstructorReturn(this, (TabBarIOS.__proto__ || Object.getPrototypeOf(TabBarIOS)).apply(this, arguments));
+  }
+
+  _createClass(TabBarIOS, [{
+    key: 'render',
+    value: function render() {
+      return React.createElement(
+        RCTTabBar,
+        {
+          style: [styles.tabGroup, this.props.style],
+          unselectedTintColor: this.props.unselectedTintColor,
+          unselectedItemTintColor: this.props.unselectedItemTintColor,
+          tintColor: this.props.tintColor,
+          barTintColor: this.props.barTintColor,
+          barStyle: this.props.barStyle,
+          itemPositioning: this.props.itemPositioning,
+          translucent: this.props.translucent !== false, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 79
+          }
+        },
+        this.props.children
+      );
+    }
+  }]);
+
+  return TabBarIOS;
+}(React.Component), _class.Item = TabBarItemIOS, _class.propTypes = _extends({}, ViewPropTypes, {
+  style: ViewPropTypes.style,
+
+  unselectedTintColor: ColorPropType,
+
+  tintColor: ColorPropType,
+
+  unselectedItemTintColor: ColorPropType,
+
+  barTintColor: ColorPropType,
+
+  barStyle: PropTypes.oneOf(['default', 'black']),
+
+  translucent: PropTypes.bool,
+
+  itemPositioning: PropTypes.oneOf(['fill', 'center', 'auto'])
+}), _temp));
+
+var styles = StyleSheet.create({
+  tabGroup: {
+    flex: 1
+  }
+});
+
+var RCTTabBar = requireNativeComponent('RCTTabBar', TabBarIOS);
+
+module.exports = TabBarIOS;

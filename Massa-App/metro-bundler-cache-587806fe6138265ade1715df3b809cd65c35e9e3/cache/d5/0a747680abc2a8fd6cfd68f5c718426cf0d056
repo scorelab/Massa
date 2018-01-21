@@ -1,0 +1,42 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _invariant = require('invariant');
+
+var _invariant2 = _interopRequireDefault(_invariant);
+
+var _react = require('react');
+
+var React = _interopRequireWildcard(_react);
+
+var _reactNative = require('react-native');
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var RNViewShot = _reactNative.NativeModules.RNViewShot;
+
+exports.default = function takeSnapshotAsync(node, options) {
+  var handle;
+  return regeneratorRuntime.async(function takeSnapshotAsync$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          handle = typeof node === 'number' ? node : _getNodeHandle(node);
+          return _context.abrupt('return', RNViewShot.takeSnapshot(handle, options));
+
+        case 2:
+        case 'end':
+          return _context.stop();
+      }
+    }
+  }, null, this);
+};
+
+function _getNodeHandle(component) {
+  var handle = (0, _reactNative.findNodeHandle)(component);
+  (0, _invariant2.default)(handle != null, 'Could not find the React node handle for component to snapshot: %s', component);
+  return handle;
+}

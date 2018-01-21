@@ -1,0 +1,39 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.hasHardwareAsync = hasHardwareAsync;
+exports.isEnrolledAsync = isEnrolledAsync;
+exports.authenticateAsync = authenticateAsync;
+exports.cancelAuthenticate = cancelAuthenticate;
+
+var _invariant = require('invariant');
+
+var _invariant2 = _interopRequireDefault(_invariant);
+
+var _reactNative = require('react-native');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ExponentFingerprint = _reactNative.NativeModules.ExponentFingerprint;
+function hasHardwareAsync() {
+  return ExponentFingerprint.hasHardwareAsync();
+}
+
+function isEnrolledAsync() {
+  return ExponentFingerprint.isEnrolledAsync();
+}
+
+function authenticateAsync() {
+  var promptMessageIOS = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Authenticate';
+
+  if (_reactNative.Platform.OS === 'ios') {
+    (0, _invariant2.default)(typeof promptMessageIOS === 'string' && promptMessageIOS.length, 'Fingerprint.authenticateAsync must be called with a non-empty string on iOS');
+    return ExponentFingerprint.authenticateAsync(promptMessageIOS);
+  } else {
+    return ExponentFingerprint.authenticateAsync();
+  }
+}
+
+function cancelAuthenticate() {
+  ExponentFingerprint.cancelAuthenticate();
+}

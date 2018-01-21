@@ -1,0 +1,144 @@
+
+'use strict';
+
+var _react2 = require('react');
+
+var _react3 = _interopRequireDefault(_react2);
+
+var _index = require('./../../../../react-transform-hmr/lib/index.js');
+
+var _index2 = _interopRequireDefault(_index);
+
+var _jsxFileName = '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/react-native/Libraries/Components/ScrollView/ScrollViewStickyHeader.js';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _components = {
+  ScrollViewStickyHeader: {
+    displayName: 'ScrollViewStickyHeader'
+  }
+};
+
+var _reactTransformHmrLibIndexJs2 = (0, _index2.default)({
+  filename: '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/react-native/Libraries/Components/ScrollView/ScrollViewStickyHeader.js',
+  components: _components,
+  locals: [module],
+  imports: [_react3.default]
+});
+
+function _wrapComponent(id) {
+  return function (Component) {
+    return _reactTransformHmrLibIndexJs2(Component, id);
+  };
+}
+
+var Animated = require('Animated');
+var React = require('React');
+var StyleSheet = require('StyleSheet');
+
+var ScrollViewStickyHeader = _wrapComponent('ScrollViewStickyHeader')(function (_React$Component) {
+  _inherits(ScrollViewStickyHeader, _React$Component);
+
+  function ScrollViewStickyHeader(props, context) {
+    _classCallCheck(this, ScrollViewStickyHeader);
+
+    var _this = _possibleConstructorReturn(this, (ScrollViewStickyHeader.__proto__ || Object.getPrototypeOf(ScrollViewStickyHeader)).call(this, props, context));
+
+    _this._onLayout = function (event) {
+      _this.setState({
+        measured: true,
+        layoutY: event.nativeEvent.layout.y,
+        layoutHeight: event.nativeEvent.layout.height
+      });
+
+      _this.props.onLayout(event);
+      var child = React.Children.only(_this.props.children);
+      if (child.props.onLayout) {
+        child.props.onLayout(event);
+      }
+    };
+
+    _this.state = {
+      measured: false,
+      layoutY: 0,
+      layoutHeight: 0,
+      nextHeaderLayoutY: props.nextHeaderLayoutY
+    };
+    return _this;
+  }
+
+  _createClass(ScrollViewStickyHeader, [{
+    key: 'setNextHeaderY',
+    value: function setNextHeaderY(y) {
+      this.setState({ nextHeaderLayoutY: y });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _state = this.state,
+          measured = _state.measured,
+          layoutHeight = _state.layoutHeight,
+          layoutY = _state.layoutY,
+          nextHeaderLayoutY = _state.nextHeaderLayoutY;
+
+      var inputRange = [-1, 0];
+      var outputRange = [0, 0];
+
+      if (measured) {
+        inputRange.push(layoutY);
+        outputRange.push(0);
+
+        var collisionPoint = (nextHeaderLayoutY || 0) - layoutHeight;
+        if (collisionPoint >= layoutY) {
+          inputRange.push(collisionPoint, collisionPoint + 1);
+          outputRange.push(collisionPoint - layoutY, collisionPoint - layoutY);
+        } else {
+          inputRange.push(layoutY + 1);
+          outputRange.push(1);
+        }
+      }
+
+      var translateY = this.props.scrollAnimatedValue.interpolate({
+        inputRange: inputRange,
+        outputRange: outputRange
+      });
+      var child = React.Children.only(this.props.children);
+
+      return React.createElement(
+        Animated.View,
+        {
+          collapsable: false,
+          onLayout: this._onLayout,
+          style: [child.props.style, styles.header, { transform: [{ translateY: translateY }] }], __source: {
+            fileName: _jsxFileName,
+            lineNumber: 96
+          }
+        },
+        React.cloneElement(child, {
+          style: styles.fill,
+          onLayout: undefined })
+      );
+    }
+  }]);
+
+  return ScrollViewStickyHeader;
+}(React.Component));
+
+var styles = StyleSheet.create({
+  header: {
+    zIndex: 10
+  },
+  fill: {
+    flex: 1
+  }
+});
+
+module.exports = ScrollViewStickyHeader;

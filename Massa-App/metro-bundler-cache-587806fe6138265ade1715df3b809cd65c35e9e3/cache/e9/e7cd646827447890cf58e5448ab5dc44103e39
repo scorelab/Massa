@@ -1,0 +1,281 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.EXPO_CONSOLE_METHOD_NAME = undefined;
+
+var _prettyFormat = require('pretty-format');
+
+var _prettyFormat2 = _interopRequireDefault(_prettyFormat);
+
+var _parseErrorStack = require('react-native/Libraries/Core/Devtools/parseErrorStack');
+
+var _parseErrorStack2 = _interopRequireDefault(_parseErrorStack);
+
+var _symbolicateStackTrace = require('react-native/Libraries/Core/Devtools/symbolicateStackTrace');
+
+var _symbolicateStackTrace2 = _interopRequireDefault(_symbolicateStackTrace);
+
+require('./RemoteLogging');
+
+var _Constants = require('../Constants');
+
+var _Constants2 = _interopRequireDefault(_Constants);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var EXPO_CONSOLE_METHOD_NAME = exports.EXPO_CONSOLE_METHOD_NAME = '__expoConsoleLog';
+
+function serializeLogDataAsync(data, level) {
+  var serializedValues, includesStack, rawStack, syntheticError, stack, errorMessage, serializedError, error, _errorMessage, _serializedError;
+
+  return regeneratorRuntime.async(function serializeLogDataAsync$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          serializedValues = void 0;
+          includesStack = false;
+
+          if (!_stackTraceLogsSupported()) {
+            _context.next = 33;
+            break;
+          }
+
+          if (!_isUnhandledPromiseRejection(data, level)) {
+            _context.next = 12;
+            break;
+          }
+
+          rawStack = data[0];
+          syntheticError = { stack: rawStack };
+          _context.next = 8;
+          return regeneratorRuntime.awrap(_symbolicateErrorAsync(syntheticError));
+
+        case 8:
+          stack = _context.sent;
+
+
+          if (!stack.length) {
+            serializedValues = _stringifyLogData(data);
+          } else {
+            errorMessage = rawStack.split('\n')[1];
+
+            serializedValues = [{
+              message: '[Unhandled promise rejection: ' + errorMessage + ']',
+              stack: _formatStack(stack)
+            }];
+            includesStack = true;
+          }
+          _context.next = 31;
+          break;
+
+        case 12:
+          if (!(data.length === 1 && data[0] instanceof Error)) {
+            _context.next = 20;
+            break;
+          }
+
+          _context.next = 15;
+          return regeneratorRuntime.awrap(_serializeErrorAsync(data[0]));
+
+        case 15:
+          serializedError = _context.sent;
+
+          serializedValues = [serializedError];
+          includesStack = serializedError.hasOwnProperty('stack');
+          _context.next = 31;
+          break;
+
+        case 20:
+          if (!(level === 'warn' || level === 'error')) {
+            _context.next = 30;
+            break;
+          }
+
+          error = _captureConsoleStackTrace();
+          _errorMessage = _stringifyLogData(data).join(', ');
+          _context.next = 25;
+          return regeneratorRuntime.awrap(_serializeErrorAsync(error, _errorMessage));
+
+        case 25:
+          _serializedError = _context.sent;
+
+          serializedValues = [_serializedError];
+          includesStack = _serializedError.hasOwnProperty('stack');
+          _context.next = 31;
+          break;
+
+        case 30:
+          serializedValues = _stringifyLogData(data);
+
+        case 31:
+          _context.next = 34;
+          break;
+
+        case 33:
+          serializedValues = _stringifyLogData(data);
+
+        case 34:
+          return _context.abrupt('return', {
+            body: [].concat(_toConsumableArray(serializedValues)),
+            includesStack: includesStack
+          });
+
+        case 35:
+        case 'end':
+          return _context.stop();
+      }
+    }
+  }, null, this);
+}
+
+function _stringifyLogData(data) {
+  return data.map(function (item) {
+    if (typeof item === 'string') {
+      return item;
+    } else {
+      return (0, _prettyFormat2.default)(item);
+    }
+  });
+}
+
+function _serializeErrorAsync(error, message) {
+  var stack, formattedStack;
+  return regeneratorRuntime.async(function _serializeErrorAsync$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          if (message == null) {
+            message = error.message;
+          }
+
+          if (!(!error.stack || !error.stack.length)) {
+            _context2.next = 3;
+            break;
+          }
+
+          return _context2.abrupt('return', (0, _prettyFormat2.default)(error));
+
+        case 3:
+          _context2.next = 5;
+          return regeneratorRuntime.awrap(_symbolicateErrorAsync(error));
+
+        case 5:
+          stack = _context2.sent;
+          formattedStack = _formatStack(stack);
+          return _context2.abrupt('return', { message: message, stack: formattedStack });
+
+        case 8:
+        case 'end':
+          return _context2.stop();
+      }
+    }
+  }, null, this);
+}
+
+function _symbolicateErrorAsync(error) {
+  var parsedStack, symbolicatedStack;
+  return regeneratorRuntime.async(function _symbolicateErrorAsync$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          parsedStack = (0, _parseErrorStack2.default)(error);
+          symbolicatedStack = void 0;
+          _context3.prev = 2;
+          _context3.next = 5;
+          return regeneratorRuntime.awrap((0, _symbolicateStackTrace2.default)(parsedStack));
+
+        case 5:
+          symbolicatedStack = _context3.sent;
+          _context3.next = 11;
+          break;
+
+        case 8:
+          _context3.prev = 8;
+          _context3.t0 = _context3['catch'](2);
+          return _context3.abrupt('return', parsedStack);
+
+        case 11:
+          if (symbolicatedStack) {
+            _context3.next = 13;
+            break;
+          }
+
+          return _context3.abrupt('return', parsedStack);
+
+        case 13:
+          return _context3.abrupt('return', symbolicatedStack.map(_removeProjectRoot));
+
+        case 14:
+        case 'end':
+          return _context3.stop();
+      }
+    }
+  }, null, this, [[2, 8]]);
+}
+
+function _formatStack(stack) {
+  return stack.map(function (frame) {
+    var line = frame.file + ':' + frame.lineNumber;
+    if (frame.column != null) {
+      line += ':' + frame.column;
+    }
+    line += ' in ' + frame.methodName;
+    return line;
+  }).join('\n');
+}
+
+function _removeProjectRoot(frame) {
+  var filename = frame.file;
+  if (filename == null) {
+    return frame;
+  }
+
+  var projectRoot = _getProjectRoot();
+  if (projectRoot == null) {
+    return frame;
+  }
+
+  if (filename.startsWith(projectRoot)) {
+    filename = filename.substring(projectRoot.length);
+    if (filename[0] === '/' || filename[0] === '\\') {
+      filename = filename.substring(1);
+    }
+    frame.file = filename;
+  }
+
+  return frame;
+}
+
+function _stackTraceLogsSupported() {
+  return !!(__DEV__ && _getProjectRoot());
+}
+
+function _isUnhandledPromiseRejection(data, level) {
+  return level === 'warn' && typeof data[0] === 'string' && /^Possible Unhandled Promise Rejection/.test(data[0]);
+}
+
+function _captureConsoleStackTrace() {
+  try {
+    throw new Error();
+  } catch (error) {
+    var stackLines = error.stack.split('\n');
+    var consoleMethodIndex = stackLines.findIndex(function (frame) {
+      return frame.includes(EXPO_CONSOLE_METHOD_NAME);
+    });
+    if (consoleMethodIndex !== -1) {
+      stackLines = stackLines.slice(consoleMethodIndex + 1);
+      error.stack = stackLines.join('\n');
+    }
+    return error;
+  }
+}
+
+function _getProjectRoot() {
+  return _Constants2.default.manifest && _Constants2.default.manifest.developer ? _Constants2.default.manifest.developer.projectRoot : null;
+}
+
+exports.default = {
+  serializeLogDataAsync: serializeLogDataAsync
+};

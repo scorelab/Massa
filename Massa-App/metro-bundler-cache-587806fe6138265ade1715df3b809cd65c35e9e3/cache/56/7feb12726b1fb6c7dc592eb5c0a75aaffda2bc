@@ -1,0 +1,179 @@
+
+'use strict';
+
+var _jsxFileName = '/home/padamchopra/Documents/react-apps/Massa/Massa-App/node_modules/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var createReactClass = require('create-react-class');
+var Keyboard = require('Keyboard');
+var LayoutAnimation = require('LayoutAnimation');
+var Platform = require('Platform');
+var PropTypes = require('prop-types');
+var React = require('React');
+
+var TimerMixin = require('react-timer-mixin');
+var View = require('View');
+var ViewPropTypes = require('ViewPropTypes');
+
+var viewRef = 'VIEW';
+
+var KeyboardAvoidingView = createReactClass({
+  displayName: 'KeyboardAvoidingView',
+  mixins: [TimerMixin],
+
+  propTypes: _extends({}, ViewPropTypes, {
+    behavior: PropTypes.oneOf(['height', 'position', 'padding']),
+
+    contentContainerStyle: ViewPropTypes.style,
+
+    keyboardVerticalOffset: PropTypes.number.isRequired
+  }),
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      keyboardVerticalOffset: 0
+    };
+  },
+  getInitialState: function getInitialState() {
+    return {
+      bottom: 0
+    };
+  },
+
+
+  subscriptions: [],
+  frame: null,
+
+  relativeKeyboardHeight: function relativeKeyboardHeight(keyboardFrame) {
+    var frame = this.frame;
+    if (!frame || !keyboardFrame) {
+      return 0;
+    }
+
+    var keyboardY = keyboardFrame.screenY - this.props.keyboardVerticalOffset;
+
+    return Math.max(frame.y + frame.height - keyboardY, 0);
+  },
+  onKeyboardChange: function onKeyboardChange(event) {
+    if (!event) {
+      this.setState({ bottom: 0 });
+      return;
+    }
+
+    var duration = event.duration,
+        easing = event.easing,
+        endCoordinates = event.endCoordinates;
+
+    var height = this.relativeKeyboardHeight(endCoordinates);
+
+    if (duration && easing) {
+      LayoutAnimation.configureNext({
+        duration: duration,
+        update: {
+          duration: duration,
+          type: LayoutAnimation.Types[easing] || 'keyboard'
+        }
+      });
+    }
+    this.setState({ bottom: height });
+  },
+  onLayout: function onLayout(event) {
+    this.frame = event.nativeEvent.layout;
+  },
+  componentWillUpdate: function componentWillUpdate(nextProps, nextState, nextContext) {
+    if (nextState.bottom === this.state.bottom && this.props.behavior === 'height' && nextProps.behavior === 'height') {
+      nextState.bottom = 0;
+    }
+  },
+  componentWillMount: function componentWillMount() {
+    if (Platform.OS === 'ios') {
+      this.subscriptions = [Keyboard.addListener('keyboardWillChangeFrame', this.onKeyboardChange)];
+    } else {
+      this.subscriptions = [Keyboard.addListener('keyboardDidHide', this.onKeyboardChange), Keyboard.addListener('keyboardDidShow', this.onKeyboardChange)];
+    }
+  },
+  componentWillUnmount: function componentWillUnmount() {
+    this.subscriptions.forEach(function (sub) {
+      return sub.remove();
+    });
+  },
+  render: function render() {
+    var _props = this.props,
+        behavior = _props.behavior,
+        children = _props.children,
+        style = _props.style,
+        props = _objectWithoutProperties(_props, ['behavior', 'children', 'style']);
+
+    switch (behavior) {
+      case 'height':
+        var heightStyle = void 0;
+        if (this.frame) {
+          heightStyle = { height: this.frame.height - this.state.bottom, flex: 0 };
+        }
+        return React.createElement(
+          View,
+          _extends({ ref: viewRef, style: [style, heightStyle], onLayout: this.onLayout }, props, {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 165
+            }
+          }),
+          children
+        );
+
+      case 'position':
+        var positionStyle = { bottom: this.state.bottom };
+        var contentContainerStyle = this.props.contentContainerStyle;
+
+
+        return React.createElement(
+          View,
+          _extends({ ref: viewRef, style: style, onLayout: this.onLayout }, props, {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 175
+            }
+          }),
+          React.createElement(
+            View,
+            { style: [contentContainerStyle, positionStyle], __source: {
+                fileName: _jsxFileName,
+                lineNumber: 176
+              }
+            },
+            children
+          )
+        );
+
+      case 'padding':
+        var paddingStyle = { paddingBottom: this.state.bottom };
+        return React.createElement(
+          View,
+          _extends({ ref: viewRef, style: [style, paddingStyle], onLayout: this.onLayout }, props, {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 185
+            }
+          }),
+          children
+        );
+
+      default:
+        return React.createElement(
+          View,
+          _extends({ ref: viewRef, onLayout: this.onLayout, style: style }, props, {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 192
+            }
+          }),
+          children
+        );
+    }
+  }
+});
+
+module.exports = KeyboardAvoidingView;

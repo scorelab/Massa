@@ -1,0 +1,59 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getCurrentDeviceCountryAsync = getCurrentDeviceCountryAsync;
+exports.getCurrentLocaleAsync = getCurrentLocaleAsync;
+exports.getCurrentTimeZoneAsync = getCurrentTimeZoneAsync;
+exports.reload = reload;
+exports.addNewVersionListenerExperimental = addNewVersionListenerExperimental;
+
+var _invariant = require('invariant');
+
+var _invariant2 = _interopRequireDefault(_invariant);
+
+var _fbemitter = require('fbemitter');
+
+var _reactNative = require('react-native');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ExponentUtil = _reactNative.NativeModules.ExponentUtil;
+function getCurrentDeviceCountryAsync() {
+  return ExponentUtil.getCurrentDeviceCountryAsync();
+}
+
+function getCurrentLocaleAsync() {
+  return ExponentUtil.getCurrentLocaleAsync();
+}
+
+function getCurrentTimeZoneAsync() {
+  return ExponentUtil.getCurrentTimeZoneAsync();
+}
+
+function reload() {
+  ExponentUtil.reload();
+}
+
+var _emitter = void 0;
+
+function _getEmitter() {
+  if (!_emitter) {
+    _emitter = new _fbemitter.EventEmitter();
+    _reactNative.DeviceEventEmitter.addListener('Exponent.newVersionAvailable', _emitNewVersionAvailable);
+  }
+  return _emitter;
+}
+
+function _emitNewVersionAvailable(newVersionEvent) {
+  if (typeof newVersionEvent === 'string') {
+    newVersionEvent = JSON.parse(newVersionEvent);
+  }
+
+  (0, _invariant2.default)(_emitter, 'EventEmitter must be initialized to use from its listener');
+  _emitter.emit('newVersionAvailable', newVersionEvent);
+}
+
+function addNewVersionListenerExperimental(listener) {
+  var emitter = _getEmitter();
+  return emitter.addListener('newVersionAvailable', listener);
+}

@@ -1,0 +1,22 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Orientation = undefined;
+exports.allow = allow;
+
+var _reactNative = require('react-native');
+
+var Orientation = exports.Orientation = {
+  ALL: 'ALL',
+  ALL_BUT_UPSIDE_DOWN: 'ALL_BUT_UPSIDE_DOWN',
+  PORTRAIT: 'PORTRAIT',
+  PORTRAIT_UP: 'PORTRAIT_UP',
+  PORTRAIT_DOWN: 'PORTRAIT_DOWN',
+  LANDSCAPE: 'LANDSCAPE',
+  LANDSCAPE_LEFT: 'LANDSCAPE_LEFT',
+  LANDSCAPE_RIGHT: 'LANDSCAPE_RIGHT'
+};
+
+function allow(orientation) {
+  _reactNative.NativeModules.ExponentScreenOrientation.allow(orientation);
+}

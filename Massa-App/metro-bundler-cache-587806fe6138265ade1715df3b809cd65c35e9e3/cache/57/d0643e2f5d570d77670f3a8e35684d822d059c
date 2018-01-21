@@ -1,0 +1,100 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RELATIONSHIPS = exports.DATES = exports.URLS = exports.IM_ADDRESSES = exports.SOCIAL_PROFILES = exports.PHONETIC_LAST_NAME = exports.PHONETIC_MIDDLE_NAME = exports.PHONETIC_FIRST_NAME = exports.NAME_SUFFIX = exports.NAME_PREFIX = exports.NON_GREGORIAN_BIRTHDAY = exports.BIRTHDAY = exports.NOTE = exports.THUMBNAIL = exports.IMAGE = exports.ADDRESSES = exports.EMAILS = exports.PHONE_NUMBERS = undefined;
+exports.getContactsAsync = getContactsAsync;
+exports.getContactByIdAsync = getContactByIdAsync;
+
+var _reactNative = require('react-native');
+
+var DEFAULT_PAGE_SIZE = 100;
+
+function getContactsAsync() {
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref$pageSize = _ref.pageSize,
+      pageSize = _ref$pageSize === undefined ? DEFAULT_PAGE_SIZE : _ref$pageSize,
+      _ref$pageOffset = _ref.pageOffset,
+      pageOffset = _ref$pageOffset === undefined ? 0 : _ref$pageOffset,
+      _ref$fields = _ref.fields,
+      fields = _ref$fields === undefined ? [] : _ref$fields;
+
+  return regeneratorRuntime.async(function getContactsAsync$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          if (_reactNative.Platform.OS === 'ios' && (fields.includes(IMAGE) || fields.includes(THUMBNAIL))) {
+            console.warn('Mind that fetching images for all contacts might be time and resource consuming. ' + 'Consider using getContactByIdAsync() to get data for a single contact.');
+          }
+          _context.next = 3;
+          return regeneratorRuntime.awrap(_reactNative.NativeModules.ExponentContacts.getContactsAsync({
+            pageSize: pageSize,
+            pageOffset: pageOffset,
+            fields: fields
+          }));
+
+        case 3:
+          return _context.abrupt('return', _context.sent);
+
+        case 4:
+        case 'end':
+          return _context.stop();
+      }
+    }
+  }, null, this);
+}
+
+function getContactByIdAsync() {
+  var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref2$fields = _ref2.fields,
+      fields = _ref2$fields === undefined ? [] : _ref2$fields,
+      id = _ref2.id;
+
+  return regeneratorRuntime.async(function getContactByIdAsync$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          if (!(id == null)) {
+            _context2.next = 4;
+            break;
+          }
+
+          throw new Error('Please pass an ID as a parameter');
+
+        case 4:
+          _context2.next = 6;
+          return regeneratorRuntime.awrap(_reactNative.NativeModules.ExponentContacts.getContactsAsync({
+            pageSize: 1,
+            pageOffset: 0,
+            fields: fields,
+            id: id
+          }));
+
+        case 6:
+          return _context2.abrupt('return', _context2.sent);
+
+        case 7:
+        case 'end':
+          return _context2.stop();
+      }
+    }
+  }, null, this);
+}
+
+var PHONE_NUMBERS = exports.PHONE_NUMBERS = 'phoneNumbers';
+var EMAILS = exports.EMAILS = 'emails';
+var ADDRESSES = exports.ADDRESSES = 'addresses';
+var IMAGE = exports.IMAGE = 'image';
+var THUMBNAIL = exports.THUMBNAIL = 'thumbnail';
+var NOTE = exports.NOTE = 'note';
+var BIRTHDAY = exports.BIRTHDAY = 'birthday';
+var NON_GREGORIAN_BIRTHDAY = exports.NON_GREGORIAN_BIRTHDAY = 'nonGregorianBirthday';
+var NAME_PREFIX = exports.NAME_PREFIX = 'namePrefix';
+var NAME_SUFFIX = exports.NAME_SUFFIX = 'nameSuffix';
+var PHONETIC_FIRST_NAME = exports.PHONETIC_FIRST_NAME = 'phoneticFirstName';
+var PHONETIC_MIDDLE_NAME = exports.PHONETIC_MIDDLE_NAME = 'phoneticMiddleName';
+var PHONETIC_LAST_NAME = exports.PHONETIC_LAST_NAME = 'phoneticLastName';
+var SOCIAL_PROFILES = exports.SOCIAL_PROFILES = 'socialProfiles';
+var IM_ADDRESSES = exports.IM_ADDRESSES = 'instantMessageAddresses';
+var URLS = exports.URLS = 'urlAddresses';
+var DATES = exports.DATES = 'dates';
+var RELATIONSHIPS = exports.RELATIONSHIPS = 'relationships';

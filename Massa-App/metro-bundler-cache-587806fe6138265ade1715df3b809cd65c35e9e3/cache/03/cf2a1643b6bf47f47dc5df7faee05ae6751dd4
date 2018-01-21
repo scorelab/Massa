@@ -1,0 +1,42 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _reactNative = require('react-native');
+
+var ExponentSegment = _reactNative.NativeModules.ExponentSegment;
+exports.default = {
+  initialize: function initialize(options) {
+    if (_reactNative.Platform.OS === 'android') {
+      return ExponentSegment.initializeAndroid(options.androidWriteKey);
+    } else if (_reactNative.Platform.OS === 'ios') {
+      return ExponentSegment.initializeIOS(options.iosWriteKey);
+    } else {
+      throw new Error('Unable to initialize Segment on `' + _reactNative.Platform.OS + '`');
+    }
+  },
+  identify: function identify(userId) {
+    return ExponentSegment.identify(userId);
+  },
+  identifyWithTraits: function identifyWithTraits(userId, traits) {
+    return ExponentSegment.identifyWithTraits(userId, traits);
+  },
+  reset: function reset() {
+    return ExponentSegment.reset();
+  },
+  track: function track(event) {
+    return ExponentSegment.track(event);
+  },
+  trackWithProperties: function trackWithProperties(event, properties) {
+    return ExponentSegment.trackWithProperties(event, properties);
+  },
+  screen: function screen(screenName) {
+    return ExponentSegment.screen(screenName);
+  },
+  screenWithProperties: function screenWithProperties(event, properties) {
+    return ExponentSegment.screenWithProperties(event, properties);
+  },
+  flush: function flush() {
+    return ExponentSegment.flush();
+  }
+};

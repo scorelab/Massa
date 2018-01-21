@@ -1,0 +1,124 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _invariant = require('invariant');
+
+var _invariant2 = _interopRequireDefault(_invariant);
+
+var _reactNative = require('react-native');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ExponentWebBrowser = _reactNative.NativeModules.ExponentWebBrowser;
+
+
+function openBrowserAsync(url) {
+  return regeneratorRuntime.async(function openBrowserAsync$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          return _context.abrupt('return', ExponentWebBrowser.openBrowserAsync(url));
+
+        case 1:
+        case 'end':
+          return _context.stop();
+      }
+    }
+  }, null, this);
+}
+
+function dismissBrowser() {
+  ExponentWebBrowser.dismissBrowser();
+}
+
+function openAuthSessionAsync(url, redirectUrl) {
+  return regeneratorRuntime.async(function openAuthSessionAsync$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          if (!_authSessionIsNativelySupported()) {
+            _context2.next = 4;
+            break;
+          }
+
+          return _context2.abrupt('return', ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl));
+
+        case 4:
+          return _context2.abrupt('return', _openAuthSessionPolyfillAsync(url, redirectUrl));
+
+        case 5:
+        case 'end':
+          return _context2.stop();
+      }
+    }
+  }, null, this);
+}
+
+function dismissAuthSession() {
+  if (_authSessionIsNativelySupported()) {
+    ExponentWebBrowser.dismissAuthSession();
+  } else {
+    ExponentWebBrowser.dismissBrowser();
+  }
+}
+
+function _authSessionIsNativelySupported() {
+  if (_reactNative.Platform.OS === 'android') {
+    return false;
+  }
+
+  var versionNumber = parseInt(_reactNative.Platform.Version, 10);
+  return versionNumber >= 11;
+}
+
+var _redirectHandler = void 0;
+
+function _openAuthSessionPolyfillAsync(startUrl, returnUrl) {
+  return regeneratorRuntime.async(function _openAuthSessionPolyfillAsync$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          (0, _invariant2.default)(!_redirectHandler, 'WebBrowser.openAuthSessionAsync is in a bad state. _redirectHandler is defined when it should not be.');
+
+          _context3.prev = 1;
+          _context3.next = 4;
+          return regeneratorRuntime.awrap(Promise.race([openBrowserAsync(startUrl), _waitForRedirectAsync(returnUrl)]));
+
+        case 4:
+          return _context3.abrupt('return', _context3.sent);
+
+        case 5:
+          _context3.prev = 5;
+
+          dismissBrowser();
+          _reactNative.Linking.removeEventListener('url', _redirectHandler);
+          _redirectHandler = null;
+          return _context3.finish(5);
+
+        case 10:
+        case 'end':
+          return _context3.stop();
+      }
+    }
+  }, null, this, [[1,, 5, 10]]);
+}
+
+function _waitForRedirectAsync(returnUrl) {
+  return new Promise(function (resolve) {
+    _redirectHandler = function _redirectHandler(event) {
+      if (event.url.startsWith(returnUrl)) {
+        resolve({ url: event.url, type: 'success' });
+      }
+    };
+
+    _reactNative.Linking.addEventListener('url', _redirectHandler);
+  });
+}
+
+exports.default = {
+  openBrowserAsync: openBrowserAsync,
+  openAuthSessionAsync: openAuthSessionAsync,
+  dismissBrowser: dismissBrowser,
+  dismissAuthSession: dismissAuthSession
+};
