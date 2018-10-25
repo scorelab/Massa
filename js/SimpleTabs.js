@@ -11,22 +11,6 @@ import SampleText from './SampleText';
 const MyNavScreen = ({ navigation, banner }) => (
   <SafeAreaView forceInset={{ horizontal: 'always', top: 'always' }}>
     <SampleText>{banner}</SampleText>
-    <Button
-      onPress={() => navigation.navigate('Home')}
-      title="Go to home tab"
-    />
-    <Button
-	onPress={() => navigation.navigate('People')}
-	title="Go to People tab"
-	/>
-	<Button
-	onPress={() => navigation.navigate('Chat')}
-	title="Go to Chat tab"
-	/>
-    <Button
-      onPress={() => navigation.navigate('Settings')}
-      title="Go to settings tab"
-    />
     <Button onPress={() => navigation.goBack(null)} title="Go back" />
     <StatusBar barStyle="default" />
   </SafeAreaView>
