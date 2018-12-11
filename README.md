@@ -7,6 +7,6 @@ There are 2 major uses for this application
 2) Multiple people with low bandwidths can download a large file that is collectively needed. 
 
 Design Sketch:
-https://docs.google.com/document/d/1Z7jk5WzJ2_wMt0_riYiB6q5hmrhU_Uybod42j_cXJAE/edit
+https://docs.google.com/document/d/198GQ-YXMnGymiSGBBaplGgiU5QH3zcWJ7xdM6Ueps0g/edit?usp=sharing
 
 For more information please refer the wiki.
