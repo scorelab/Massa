@@ -1,12 +1,34 @@
-# Massa - Mobile Accessible Social Sharing Agent. 
 
-Massa is an application that allows users to share internet bandwidth allocated to a file download. A download is performed using multiple devices and/or multiple internet connections. Downloaded blocks are joined using a local network or manually. 
+![dd](https://user-images.githubusercontent.com/17242746/47491570-bcc49b80-d868-11e8-96ec-11b69bde3493.png)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/scorelab/Massa)
+# Massa - Mobile Accessible Social Sharing Agent.
 
-There are 2 major uses for this application 
+Massa is an application that allows users to share internet bandwidth allocated to a file download. A download is performed using multiple devices and/or multiple internet connections. Downloaded blocks are joined using a local network or manually.
+
+There are 2 major uses for this application
 1) An Individual can use multiple internet connections and multiple devices to download a file faster.
-2) Multiple people with low bandwidths can download a large file that is collectively needed. 
+2) Multiple people with low bandwidths can download a large file that is collectively needed.
 
-Design Sketch:
+## Installation
+
+First clone the Repository
+```
+git clone https://github.com/scorelab/Massa.git
+```
+Make sure You have install React Native and npm on your machine.
+To install react-native run
+```
+npm install -g react-native-cli
+```
+Change Directory To Massa
+```
+  $ npm install
+  $ npm start
+```
+## Screenshots
+![ss](https://user-images.githubusercontent.com/17242746/47492102-db776200-d869-11e8-9a06-d2a48ffdcb3d.png)
+
+## Design Sketch:
 https://docs.google.com/document/d/1Z7jk5WzJ2_wMt0_riYiB6q5hmrhU_Uybod42j_cXJAE/edit
 
 For more information please refer the wiki.
