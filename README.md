@@ -1,5 +1,4 @@
 
-![dd](https://user-images.githubusercontent.com/17242746/47491570-bcc49b80-d868-11e8-96ec-11b69bde3493.png)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/scorelab/Massa)
 # Massa - Mobile Accessible Social Sharing Agent.
 
