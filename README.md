@@ -28,7 +28,8 @@ Change Directory To Massa
 ## Screenshots
 ![ss](https://user-images.githubusercontent.com/17242746/47492102-db776200-d869-11e8-9a06-d2a48ffdcb3d.png)
 
-## Design Sketch:
-https://docs.google.com/document/d/1Z7jk5WzJ2_wMt0_riYiB6q5hmrhU_Uybod42j_cXJAE/edit
+Design Sketch:
+https://docs.google.com/document/d/198GQ-YXMnGymiSGBBaplGgiU5QH3zcWJ7xdM6Ueps0g/edit?usp=sharing
+
 
 For more information please refer the wiki.
