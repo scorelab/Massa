@@ -12,7 +12,7 @@
       "icon": "lol.png",
       "hideExponentText": false
     },
-    "sdkVersion": "26.0.0",
+    "sdkVersion": "24.0.0",
     "entryPoint": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
     "packagerOpts": {
       "assetExts": [
