@@ -12,13 +12,13 @@ const MyNavScreen = ({ navigation, banner }) => (
     <SampleText>{banner}</SampleText>
     <Button
       onPress={() => navigation.navigate('Profile', { name: 'Jane' })}
-      title="Go to a profile screen"
+      title="Go To Profile Screen"
     />
     <Button
       onPress={() => navigation.navigate('Downloads', { name: 'Jane' })}
-      title="Go to a Downloads screen"
+      title="Go To Downloads Screen"
     />
-    <Button onPress={() => navigation.goBack(null)} title="Go back" />
+    <Button onPress={() => navigation.goBack(null)} title="Go Back" />
     <StatusBar barStyle="default" />
   </SafeAreaView>
 );

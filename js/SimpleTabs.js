@@ -11,7 +11,7 @@ import SampleText from './SampleText';
 const MyNavScreen = ({ navigation, banner }) => (
   <SafeAreaView forceInset={{ horizontal: 'always', top: 'always' }}>
     <SampleText>{banner}</SampleText>
-    <Button onPress={() => navigation.goBack(null)} title="Go back" />
+    <Button onPress={() => navigation.goBack(null)} title="Go Back" />
     <StatusBar barStyle="default" />
   </SafeAreaView>
 );

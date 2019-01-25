@@ -14,21 +14,21 @@ const MyNavScreen = ({ navigation, banner }) => (
     <SampleText>{banner}</SampleText>
     <Button
       onPress={() => navigation.navigate('Profile', { name: 'Jordan' })}
-      title="Open Friends profile screen"
+      title="Open Friends Profile Screen"
     />
     <Button
       onPress={() => navigation.navigate('NotifSettings')}
-      title="Open Download Progress screen"
+      title="Open Download Progress Screen"
     />
     <Button
       onPress={() => navigation.navigate('SettingsTab')}
-      title="Go to settings tab"
+      title="Go To Settings Tab"
     />
     <Button
       onPress={() => navigation.navigate('SettingsTab')}//Button Under development
       title="Invite"
     />
-    <Button onPress={() => navigation.goBack(null)} title="Go back" />
+    <Button onPress={() => navigation.goBack(null)} title="Go Back" />
     <StatusBar barStyle="default" />
   </ScrollView>
 );
