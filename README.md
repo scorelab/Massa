@@ -24,6 +24,10 @@ Change Directory To Massa
   $ npm install
   $ npm start
 ```
+If Not Worked
+```
+  $ expo start  
+```
 ## Screenshots
 ![ss](https://user-images.githubusercontent.com/17242746/47492102-db776200-d869-11e8-9a06-d2a48ffdcb3d.png)
 

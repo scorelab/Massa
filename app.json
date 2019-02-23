@@ -22,6 +22,9 @@
     },
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.test.testa"
     }
   }
 }

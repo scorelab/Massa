@@ -1,0 +1,9 @@
+{
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 6116,
+  "devToolsPort": 19002,
+  "expoServerNgrokUrl": "https://vc-2j2.anonymous.massa.exp.direct",
+  "packagerNgrokUrl": "https://packager.vc-2j2.anonymous.massa.exp.direct",
+  "ngrokPid": 9708
+}
